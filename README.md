@@ -60,22 +60,6 @@ The schema follows normalization principles and maintains relational integrity u
 
 ---
 
-## Project Structure
-
-
-hospital-records-dbms/
-│
-├── routes/
-├── controllers/
-├── models/
-├── config/
-├── .env
-├── server.js
-└── package.json
-
-
----
-
 ## Installation & Setup
 
 ### 1️⃣ Clone the repository
@@ -86,11 +70,11 @@ npm install
 ### 3️⃣ Configure environment variables
 Create a .env file in the root directory:
 
-PORT=5000
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=yourpassword
-DB_NAME=hospital_db
+- PORT=5000
+- DB_HOST=localhost
+- DB_USER=root
+- DB_PASSWORD=yourpassword
+- DB_NAME=hospital_db
 
 ### 4️⃣ Run the server
 npm start
