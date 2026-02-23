@@ -1,10 +1,10 @@
-#  Hospital Records DBMS
+# Hospital Records DBMS
 
 A backend-based Hospital Records Management System designed to efficiently manage patients, doctors, appointments, and billing operations using a structured database architecture.
 
 ---
 
-##  Project Overview
+## Project Overview
 
 The Hospital Records DBMS is a database-driven system built to streamline hospital operations.  
 It ensures proper data organization, relational integrity, and efficient record handling.
@@ -18,7 +18,7 @@ This project demonstrates:
 
 ---
 
-##  Features
+## Features
 
 -  Patient Registration & Record Management  
 -  Doctor Management System  
@@ -30,7 +30,7 @@ This project demonstrates:
 
 ---
 
-##  Tech Stack
+## Tech Stack
 
 **Backend**
 - Node.js
@@ -45,7 +45,7 @@ This project demonstrates:
 
 ---
 
-## 🗄 Database Entities
+## Database Entities
 
 The system consists of the following core entities:
 
@@ -60,7 +60,7 @@ The schema follows normalization principles and maintains relational integrity u
 
 ---
 
-##  Project Structure
+## Project Structure
 
 
 hospital-records-dbms/
@@ -76,7 +76,7 @@ hospital-records-dbms/
 
 ---
 
-##  Installation & Setup
+## Installation & Setup
 
 ### 1️⃣ Clone the repository
 
