@@ -30,6 +30,22 @@ const registerUser = async (req, res) => {
       [email, hashedPassword, role]
     );
 
+     if (role === "Patient") {
+      await db.execute(
+        `INSERT INTO Patients (user_id, name)
+         VALUES (?, ?)`,
+        [result.insertId, email] // temporary name
+      );
+    }
+
+    if (role === "Doctor") {
+      await db.execute(
+        `INSERT INTO Doctors (user_id, name, specialization)
+         VALUES (?, ?, ?)`,
+        [result.insertId, email, "General"]
+      );
+    }
+
     res.status(201).json({
       message: "User registered successfully",
       user_id: result.insertId

@@ -31,17 +31,35 @@ const createBill = async (req, res) => {
       medicine_charges
     } = req.body;
 
-    // 1️⃣ Check appointment exists
+    // 1️⃣ Check appointment exists & get status
     const [appointment] = await db.execute(
-      "SELECT appointment_id FROM Appointments WHERE appointment_id = ?",
+      `SELECT status, patient_id 
+       FROM Appointments 
+       WHERE appointment_id = ?`,
       [appointment_id]
     );
 
     if (appointment.length === 0) {
-      return res.status(400).json({ message: "Appointment not found" });
+      return res.status(400).json({
+        message: "Appointment not found"
+      });
     }
 
-    // 2️⃣ Prevent duplicate bill
+    // 2️⃣ Check appointment is Completed
+    if (appointment[0].status !== "Completed") {
+      return res.status(400).json({
+        message: "Bill can only be generated for completed appointments"
+      });
+    }
+
+    // 3️⃣ Validate patient matches appointment
+    if (appointment[0].patient_id !== patient_id) {
+      return res.status(400).json({
+        message: "Patient does not match appointment"
+      });
+    }
+
+    // 4️⃣ Prevent duplicate bill
     const [existing] = await db.execute(
       "SELECT bill_id FROM Billing WHERE appointment_id = ?",
       [appointment_id]
@@ -53,7 +71,7 @@ const createBill = async (req, res) => {
       });
     }
 
-    // 3️⃣ Insert bill (total auto-calculated by DB)
+    // 5️⃣ Insert bill (total auto-calculated by DB)
     const [result] = await db.execute(
       `INSERT INTO Billing 
        (patient_id, appointment_id, consultation_charges, lab_charges, medicine_charges)
@@ -108,8 +126,49 @@ const updatePaymentStatus = async (req, res) => {
   }
 };
 
+// GET MY BILLS (Patient only)
+const getMyBills = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // 1️⃣ Get patient_id from user_id
+    const [patient] = await db.execute(
+      "SELECT patient_id FROM Patients WHERE user_id = ?",
+      [userId]
+    );
+
+    if (patient.length === 0) {
+      return res.status(404).json({
+        message: "Patient profile not found"
+      });
+    }
+
+    const patientId = patient[0].patient_id;
+
+    // 2️⃣ Get bills for this patient
+    const [bills] = await db.execute(
+      `SELECT b.*, a.appointment_date, a.appointment_time
+       FROM Billing b
+       LEFT JOIN Appointments a ON b.appointment_id = a.appointment_id
+       WHERE b.patient_id = ?
+       ORDER BY b.issued_date DESC`,
+      [patientId]
+    );
+
+    res.json({
+      message: "Your bills fetched successfully",
+      data: bills
+    });
+
+  } catch (error) {
+    console.error("Get My Bills Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   getAllBills,
   createBill,
-  updatePaymentStatus
+  updatePaymentStatus,
+  getMyBills
 };
