@@ -88,6 +88,31 @@ const createAppointment = async (req, res) => {
   }
 };
 
+// GET ALL APPOINTMENTS
+const getAllAppointments = async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT a.*, 
+             p.name AS patient_name, 
+             d.name AS doctor_name
+      FROM Appointments a
+      JOIN Patients p ON a.patient_id = p.patient_id
+      JOIN Doctors d ON a.doctor_id = d.doctor_id
+      ORDER BY a.appointment_date, a.appointment_time
+    `);
+
+    res.json({
+      message: "Appointments fetched successfully",
+      data: rows
+    });
+
+  } catch (error) {
+    console.error("Get Appointments Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
-  createAppointment
+  createAppointment,
+  getAllAppointments
 };
