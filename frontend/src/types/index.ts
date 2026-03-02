@@ -93,12 +93,15 @@ export interface MedicalRecord {
 export interface Bill {
   bill_id: number;
   patient_id: number;
+  appointment_id: number;    // ← add this
   consultation_charges: number;
   lab_charges: number;
   medicine_charges: number;
   total_amount: number;
   payment_status: 'Paid' | 'Unpaid' | 'Pending';
-  created_at?: string;
+  issued_date?: string;      // ← backend uses issued_date not created_at
+  appointment_date?: string; // ← comes from the JOIN in getMyBills
+  appointment_time?: string; // ← comes from the JOIN in getMyBills
 }
 
 // ─── API RESPONSE ────────────────────────────────────────

@@ -24,16 +24,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const login = async (email: string, _password: string, role: UserRole) => {
-    // ── TODO: Replace this block with real API call ──
-    // const res = await axios.post('/api/auth/login', { email, password, role });
-    // const loggedInUser = res.data.user;
-    // localStorage.setItem('shms_token', res.data.token);
+    try {
+      // ── Real API call (uncomment when backend is ready) ──
+      // const res = await api.post('/auth/login', { email, password });
+      // const { token, user } = res.data;
+      // localStorage.setItem('shms_token', token);
+      // localStorage.setItem('shms_user', JSON.stringify(user));
+      // setUser(user);
 
-    const found = MOCK_USERS.find(u => u.email === email && u.role === role);
-    if (!found) throw new Error('Invalid credentials');
-
-    localStorage.setItem('shms_user', JSON.stringify(found));
-    setUser(found);
+      // ── Mock login (remove when backend is ready) ──
+      const found = MOCK_USERS.find(u => u.email === email && u.role === role);
+      if (!found) throw new Error('Invalid credentials');
+      localStorage.setItem('shms_user', JSON.stringify(found));
+      setUser(found);
+    } catch (err) {
+      throw new Error('Invalid credentials');
+    }
   };
 
   const logout = () => {

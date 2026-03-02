@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import hospitalImg from '../assets/hospital.jpg';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -80,23 +81,19 @@ const Home = () => {
         <div style={{
           flex: '1 1 360px', maxWidth: '600px',
           borderRadius: '20px', overflow: 'hidden',
-          background: 'linear-gradient(135deg, #1a2e22 0%, #0d1f16 100%)',
           border: '1px solid #1e3326',
           minHeight: '380px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          position: 'relative',
         }}>
-          <div style={{ textAlign: 'center', padding: '3rem', position: 'relative', zIndex: 1 }}>
-            <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>🏥</div>
-            <p style={{ color: '#2db87a', fontWeight: 600, fontSize: '1.1rem', margin: '0 0 0.4rem' }}>SmartCare HMS</p>
-            <p style={{ color: '#4a6355', fontSize: '0.85rem', margin: 0 }}>Your health, digitized.</p>
-          </div>
-          <div style={{
-            position: 'absolute', width: '200px', height: '200px',
-            background: '#2db87a22', borderRadius: '50%',
-            filter: 'blur(60px)', top: '50%', left: '50%',
-            transform: 'translate(-50%, -50%)', pointerEvents: 'none',
-          }} />
+          <img
+            src={hospitalImg}
+            alt="Hospital"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: 'block',
+            }}
+          />
         </div>
       </section>
 
