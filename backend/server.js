@@ -23,12 +23,15 @@ app.use("/api/appointments", appointmentRoutes);
 const billingRoutes = require("./routes/billingRoutes");
 app.use("/api/billing", billingRoutes);
 
-// Test route
+const medicalRecordRoutes = require("./routes/medicalRecordRoutes");
+app.use("/api/medical-records", medicalRecordRoutes);
+
+// Health check
 app.get("/", (req, res) => {
-    res.send("Backend is running ");
+    res.send("Backend is running ✅");
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

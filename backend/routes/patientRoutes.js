@@ -3,17 +3,25 @@ const router = express.Router();
 
 const {
   getAllPatients,
+  getPatientById,
+  getMyProfile,
   createPatient,
   updatePatient,
-  deletePatient
+  deletePatient,
 } = require("../controllers/patientController");
 
 const { protect, authorizeRoles } = require("../middleware/authMiddleware");
 
-// Only logged-in users can view
+// Patient: get own profile
+router.get("/me", protect, authorizeRoles("Patient"), getMyProfile);
+
+// Any logged-in user can view all patients
 router.get("/", protect, getAllPatients);
 
-// Only Admin can create patient (example)
+// Get patient by ID
+router.get("/:id", protect, getPatientById);
+
+// Only Admin can create patient
 router.post("/", protect, authorizeRoles("Admin"), createPatient);
 
 // Only Admin can update
