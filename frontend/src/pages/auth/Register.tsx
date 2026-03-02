@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import type { UserRole } from '../../types';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [role, setRole] = useState<UserRole>('patient');
   const [form, setForm] = useState({
     name: '', email: '', password: '', confirmPassword: '',
@@ -11,15 +13,36 @@ const Register = () => {
     specialization: '',
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const update = (key: string, val: string) => setForm(f => ({ ...f, [key]: val }));
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setError('');
     if (form.password !== form.confirmPassword) { setError('Passwords do not match'); return; }
     if (!form.name || !form.email || !form.password) { setError('Please fill all required fields'); return; }
-    // TODO: await axios.post('/api/auth/register', { ...form, role });
-    alert('Registered successfully! Please login.');
-    navigate('/login');
+
+    setLoading(true);
+    try {
+      await register({
+        email: form.email,
+        password: form.password,
+        role,
+        name: form.name,
+        age: form.age ? parseInt(form.age) : undefined,
+        gender: form.gender || undefined,
+        contact: form.contact || undefined,
+        address: form.address || undefined,
+        blood_group: form.blood_group || undefined,
+        specialization: form.specialization || undefined,
+      });
+      navigate('/login');
+    } catch (err: unknown) {
+      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      setError(message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -62,16 +85,16 @@ const Register = () => {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
           <TwoCol>
-            <DarkField label="Full Name *"  value={form.name}    onChange={v => update('name', v)}    placeholder="John Doe" />
-            <DarkField label="Email *"      value={form.email}   onChange={v => update('email', v)}   placeholder="you@example.com" type="email" />
+            <DarkField label="Full Name *" value={form.name} onChange={v => update('name', v)} placeholder="John Doe" />
+            <DarkField label="Email *" value={form.email} onChange={v => update('email', v)} placeholder="you@example.com" type="email" />
           </TwoCol>
           <TwoCol>
-            <DarkField label="Password *"         value={form.password}        onChange={v => update('password', v)}        placeholder="••••••••" type="password" />
+            <DarkField label="Password *" value={form.password} onChange={v => update('password', v)} placeholder="••••••••" type="password" />
             <DarkField label="Confirm Password *" value={form.confirmPassword} onChange={v => update('confirmPassword', v)} placeholder="••••••••" type="password" />
           </TwoCol>
           <TwoCol>
             <DarkField label="Contact" value={form.contact} onChange={v => update('contact', v)} placeholder="9876543210" />
-            <DarkField label="Age"     value={form.age}     onChange={v => update('age', v)}     placeholder="22" type="number" />
+            <DarkField label="Age" value={form.age} onChange={v => update('age', v)} placeholder="22" type="number" />
           </TwoCol>
 
           {role === 'patient' && (
@@ -103,16 +126,17 @@ const Register = () => {
           </div>
         )}
 
-        <button onClick={handleSubmit} style={{
+        <button onClick={handleSubmit} disabled={loading} style={{
           marginTop: '1.5rem', width: '100%',
           background: '#2db87a', border: 'none', color: '#fff',
           padding: '0.85rem', borderRadius: '10px',
           fontWeight: 700, fontSize: '1rem', cursor: 'pointer',
+          opacity: loading ? 0.7 : 1,
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = '#25a06a')}
-        onMouseLeave={e => (e.currentTarget.style.background = '#2db87a')}
+          onMouseEnter={e => !loading && (e.currentTarget.style.background = '#25a06a')}
+          onMouseLeave={e => (e.currentTarget.style.background = '#2db87a')}
         >
-          Create Account
+          {loading ? 'Creating account...' : 'Create Account'}
         </button>
 
         <p style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.875rem', color: '#6b7f72' }}>
@@ -143,7 +167,7 @@ const DarkField = ({ label, type = 'text', value, onChange, placeholder }: {
         width: '100%', boxSizing: 'border-box',
       }}
       onFocus={e => (e.target.style.borderColor = '#2db87a')}
-      onBlur={e  => (e.target.style.borderColor = '#1e2d22')}
+      onBlur={e => (e.target.style.borderColor = '#1e2d22')}
     />
   </div>
 );

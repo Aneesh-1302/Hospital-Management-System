@@ -6,20 +6,22 @@ import type { UserRole } from '../../types';
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [role, setRole]         = useState<UserRole>('patient');
-  const [email, setEmail]       = useState('');
+  const [role, setRole] = useState<UserRole>('patient');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError]       = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     setError('');
+    if (!email || !password) { setError('Please enter email and password.'); return; }
     setLoading(true);
     try {
-      await login(email, password, role);
+      await login(email, password);
       navigate(role === 'doctor' ? '/doctor/dashboard' : '/patient/dashboard');
-    } catch {
-      setError('Invalid credentials. Try patient@test.com or doctor@test.com');
+    } catch (err: unknown) {
+      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      setError(message || 'Invalid credentials. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -31,14 +33,6 @@ const Login = () => {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '2rem', fontFamily: "'Segoe UI', sans-serif",
     }}>
-      {/* Left branding panel */}
-      <div style={{
-        display: 'none',
-        flex: 1, maxWidth: '480px', padding: '3rem',
-        color: '#fff',
-      }} className="left-panel">
-      </div>
-
       {/* Card */}
       <div style={{
         background: '#141f18', border: '1px solid #1e2d22',
@@ -109,14 +103,6 @@ const Login = () => {
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
 
-        {/* Hint */}
-        <div style={{
-          marginTop: '1rem', background: '#0f1a14', border: '1px solid #1e2d22',
-          borderRadius: '8px', padding: '0.65rem 0.9rem', fontSize: '0.78rem', color: '#4a6355',
-        }}>
-          Demo → patient@test.com &nbsp;|&nbsp; doctor@test.com &nbsp;(any password)
-        </div>
-
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: '#6b7f72' }}>
           Don't have an account?{' '}
           <Link to="/register" style={{ color: '#2db87a', fontWeight: 600, textDecoration: 'none' }}>Register</Link>
@@ -135,12 +121,13 @@ const DarkField = ({ label, type, value, onChange, placeholder }: {
     <input
       type={type} value={value} placeholder={placeholder}
       onChange={e => onChange(e.target.value)}
+      onKeyDown={e => e.key === 'Enter' && (document.querySelector('button[data-submit]') as HTMLButtonElement)?.click()}
       style={{
         background: '#0f1a14', border: '1px solid #1e2d22', borderRadius: '8px',
         padding: '0.7rem 0.9rem', fontSize: '0.9rem', color: '#fff', outline: 'none',
       }}
       onFocus={e => (e.target.style.borderColor = '#2db87a')}
-      onBlur={e  => (e.target.style.borderColor = '#1e2d22')}
+      onBlur={e => (e.target.style.borderColor = '#1e2d22')}
     />
   </div>
 );
