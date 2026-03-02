@@ -7,7 +7,7 @@ interface Props {
 
 const statusColors: Record<string, { bg: string; color: string }> = {
   Confirmed: { bg: '#f0fff4', color: '#276749' },
-  Pending:   { bg: '#fffbeb', color: '#92400e' },
+  Pending: { bg: '#fffbeb', color: '#92400e' },
   Cancelled: { bg: '#fff5f5', color: '#9b2c2c' },
 };
 
@@ -26,8 +26,8 @@ const AppointmentCard = ({ appointment, onCancel }: Props) => {
       boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
       transition: 'box-shadow 0.2s',
     }}
-    onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)')}
-    onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)')}
+      onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)')}
+      onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)')}
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
         <p style={{ fontWeight: 600, color: '#1a202c', margin: 0 }}>

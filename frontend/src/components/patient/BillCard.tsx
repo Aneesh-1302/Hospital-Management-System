@@ -29,8 +29,8 @@ const BillCard = ({ bill }: Props) => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.875rem', color: '#4a5568' }}>
         <Row label="Consultation" amount={bill.consultation_charges} />
-        <Row label="Lab Charges"  amount={bill.lab_charges} />
-        <Row label="Medicines"    amount={bill.medicine_charges} />
+        <Row label="Lab Charges" amount={bill.lab_charges} />
+        <Row label="Medicines" amount={bill.medicine_charges} />
         <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '0.5rem 0' }} />
         <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, color: '#1a202c' }}>
           <span>Total</span>

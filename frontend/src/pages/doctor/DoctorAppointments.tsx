@@ -1,34 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppointmentItem from '../../components/doctor/AppointmentItem';
-import { mockAppointments } from '../../utils/mockData';
+import { appointmentAPI } from '../../services/api';
 import type { Appointment } from '../../types';
 
 const DoctorAppointments = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [filter, setFilter] = useState<'All' | 'Confirmed' | 'Pending' | 'Cancelled'>('All');
+  const [loading, setLoading] = useState(true);
 
-  const handleConfirm = (id: number) =>
-    setAppointments(prev => prev.map(a => a.appointment_id === id ? { ...a, status: 'Confirmed' } : a));
+  useEffect(() => {
+    appointmentAPI.getDoctor()
+      .then(res => setAppointments(res.data.data ?? []))
+      .catch(err => console.error('Fetch appointments error:', err))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const handleCancel = (id: number) =>
-    setAppointments(prev => prev.map(a => a.appointment_id === id ? { ...a, status: 'Cancelled' } : a));
+  const handleConfirm = async (id: number) => {
+    try {
+      await appointmentAPI.updateStatus(id, 'Confirmed');
+      setAppointments(prev => prev.map(a => a.appointment_id === id ? { ...a, status: 'Confirmed' } : a));
+    } catch (err) {
+      console.error('Confirm error:', err);
+      alert('Failed to confirm appointment.');
+    }
+  };
+
+  const handleCancel = async (id: number) => {
+    try {
+      await appointmentAPI.updateStatus(id, 'Cancelled');
+      setAppointments(prev => prev.map(a => a.appointment_id === id ? { ...a, status: 'Cancelled' } : a));
+    } catch (err) {
+      console.error('Cancel error:', err);
+      alert('Failed to cancel appointment.');
+    }
+  };
 
   const filtered = filter === 'All' ? appointments : appointments.filter(a => a.status === filter);
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '750px' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1a202c', marginBottom: '0.25rem' }}>
-        Appointments
-      </h1>
-      <p style={{ color: '#718096', marginBottom: '1.5rem' }}>Manage your patient appointments</p>
+    <div style={{ padding: '2rem', maxWidth: '750px', color: '#fff' }}>
+      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.25rem' }}>Appointments</h1>
+      <p style={{ color: '#6b7f72', marginBottom: '1.5rem' }}>Manage your patient appointments</p>
 
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
         {(['All', 'Confirmed', 'Pending', 'Cancelled'] as const).map(f => (
           <button key={f} onClick={() => setFilter(f)} style={{
             padding: '0.4rem 1rem', borderRadius: '99px', border: 'none', cursor: 'pointer',
             fontSize: '0.82rem', fontWeight: filter === f ? 600 : 400,
-            background: filter === f ? '#1a4a7a' : '#f7fafc',
-            color: filter === f ? '#fff' : '#718096',
+            background: filter === f ? '#2db87a' : '#1e2d22',
+            color: filter === f ? '#fff' : '#6b7f72',
           }}>
             {f}
           </button>
@@ -36,16 +56,18 @@ const DoctorAppointments = () => {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        {filtered.length === 0
-          ? <p style={{ color: '#a0aec0', textAlign: 'center', padding: '3rem' }}>No appointments found.</p>
-          : filtered.map(a => (
-            <AppointmentItem
-              key={a.appointment_id}
-              appointment={a}
-              onConfirm={handleConfirm}
-              onCancel={handleCancel}
-            />
-          ))
+        {loading
+          ? <p style={{ color: '#6b7f72', textAlign: 'center', padding: '3rem' }}>Loading appointments...</p>
+          : filtered.length === 0
+            ? <p style={{ color: '#6b7f72', textAlign: 'center', padding: '3rem' }}>No appointments found.</p>
+            : filtered.map(a => (
+              <AppointmentItem
+                key={a.appointment_id}
+                appointment={a}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+              />
+            ))
         }
       </div>
     </div>

@@ -18,8 +18,8 @@ const PatientCard = ({ patient }: Props) => {
       boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
       transition: 'box-shadow 0.2s',
     }}
-    onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)')}
-    onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)')}
+      onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)')}
+      onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)')}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <div style={{
