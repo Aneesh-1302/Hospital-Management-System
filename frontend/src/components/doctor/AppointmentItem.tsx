@@ -1,4 +1,5 @@
 import type { Appointment } from '../../types';
+import { formatDate } from '../../utils/format';
 
 interface Props {
   appointment: Appointment;
@@ -7,21 +8,18 @@ interface Props {
 }
 
 const AppointmentItem = ({ appointment, onConfirm, onCancel }: Props) => (
-  <div style={{
-    background: '#fff',
-    border: '1px solid #e2e8f0',
-    borderRadius: '12px',
+  <div className="list-item" style={{
     padding: '1rem 1.5rem',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
   }}>
     <div>
-      <p style={{ fontWeight: 600, color: '#1a202c', margin: 0 }}>
+      <p style={{ fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
         {appointment.patient_name ?? `Patient #${appointment.patient_id}`}
       </p>
-      <p style={{ color: '#718096', fontSize: '0.82rem', margin: '0.2rem 0 0' }}>
-        📅 {appointment.appointment_date} &nbsp; ⏰ {appointment.appointment_time}
+      <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', margin: '0.2rem 0 0' }}>
+        📅 {formatDate(appointment.appointment_date)} &nbsp; ⏰ {appointment.appointment_time}
       </p>
     </div>
 
@@ -30,24 +28,18 @@ const AppointmentItem = ({ appointment, onConfirm, onCancel }: Props) => (
         <>
           {onConfirm && (
             <button
+              className="btn-primary"
               onClick={() => onConfirm(appointment.appointment_id)}
-              style={{
-                background: '#1a4a7a', color: '#fff',
-                border: 'none', padding: '0.35rem 0.85rem',
-                borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem',
-              }}
+              style={{ padding: '0.35rem 0.85rem', fontSize: '0.8rem' }}
             >
               Confirm
             </button>
           )}
           {onCancel && (
             <button
+              className="btn-outline"
               onClick={() => onCancel(appointment.appointment_id)}
-              style={{
-                background: 'transparent', color: '#e53e3e',
-                border: '1px solid #fc8181', padding: '0.35rem 0.85rem',
-                borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem',
-              }}
+              style={{ padding: '0.35rem 0.85rem', fontSize: '0.8rem' }}
             >
               Cancel
             </button>
@@ -55,13 +47,12 @@ const AppointmentItem = ({ appointment, onConfirm, onCancel }: Props) => (
         </>
       )}
       {appointment.status !== 'Pending' && (
-        <span style={{
-          background: appointment.status === 'Confirmed' ? '#f0fff4' : '#fff5f5',
-          color: appointment.status === 'Confirmed' ? '#276749' : '#9b2c2c',
+        <span className="badge" style={{
+          background: appointment.status === 'Confirmed' ? 'var(--bg-hover)' : '#2a1515',
+          color: appointment.status === 'Confirmed' ? 'var(--brand-primary)' : '#f87171',
+          border: `1px solid ${appointment.status === 'Confirmed' ? 'var(--brand-primary-faded)' : '#5a2020'}`,
           padding: '0.25rem 0.75rem',
-          borderRadius: '99px',
           fontSize: '0.75rem',
-          fontWeight: 600,
         }}>
           {appointment.status}
         </span>
