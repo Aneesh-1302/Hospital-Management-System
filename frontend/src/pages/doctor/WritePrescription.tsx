@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { patientAPI, appointmentAPI, medicalRecordAPI } from '../../services/api';
 import type { Patient, Appointment } from '../../types';
+import { formatDate } from '../../utils/format';
 
 const WritePrescription = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -52,28 +53,38 @@ const WritePrescription = () => {
 
   if (success) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', maxWidth: '500px', color: '#fff' }}>
-        <div style={{ fontSize: '3rem' }}>✅</div>
-        <h2 style={{ color: '#2db87a' }}>Prescription Saved!</h2>
-        <button
-          onClick={() => { setSuccess(false); setForm({ patient_id: '', appointment_id: '', diagnosis: '', prescription: '', test_reports: '' }); }}
-          style={{ background: '#2db87a', color: '#fff', border: 'none', padding: '0.7rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
-        >
-          Write Another
-        </button>
+      <div className="dashboard-container">
+        <h1 className="page-title">Write Prescription</h1>
+        <p className="page-subtitle">Success</p>
+
+        <section className="dashboard-section" style={{ animation: 'fadeIn 0.3s ease' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div style={{ fontSize: '2rem' }}>✅</div>
+            <h2 className="dashboard-section-title" style={{ margin: 0, color: 'var(--brand-primary)', fontSize: '1.5rem' }}>Prescription Saved!</h2>
+          </div>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '1rem' }}>
+            The prescription and medical record have been successfully saved to the patient's file.
+          </p>
+          <button
+            onClick={() => { setSuccess(false); setForm({ patient_id: '', appointment_id: '', diagnosis: '', prescription: '', test_reports: '' }); }}
+            className="btn-primary"
+          >
+            ← Write Another Prescription
+          </button>
+        </section>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '650px', color: '#fff' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.25rem' }}>Write Prescription</h1>
-      <p style={{ color: '#6b7f72', marginBottom: '2rem' }}>Create a medical record for a patient</p>
+    <div className="dashboard-container">
+      <h1 className="page-title">Write Prescription</h1>
+      <p className="page-subtitle">Create a medical record for a patient</p>
 
-      <div style={{ background: '#141f18', border: '1px solid #1e2d22', borderRadius: '12px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <div className="dashboard-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         {/* Patient select */}
         <Field label="Select Patient *">
-          <select value={form.patient_id} onChange={e => update('patient_id', e.target.value)} style={inputStyle}>
+          <select value={form.patient_id} onChange={e => update('patient_id', e.target.value)} className="form-control">
             <option value="">Choose patient</option>
             {patients.map(p => (
               <option key={p.patient_id} value={p.patient_id}>{p.name}</option>
@@ -83,11 +94,11 @@ const WritePrescription = () => {
 
         {/* Appointment reference */}
         <Field label="Related Appointment">
-          <select value={form.appointment_id} onChange={e => update('appointment_id', e.target.value)} style={inputStyle}>
+          <select value={form.appointment_id} onChange={e => update('appointment_id', e.target.value)} className="form-control">
             <option value="">Select appointment (optional)</option>
             {appointments.map(a => (
               <option key={a.appointment_id} value={a.appointment_id}>
-                {a.patient_name} · {a.appointment_date} {a.appointment_time}
+                {a.patient_name} &middot; {formatDate(a.appointment_date)} {a.appointment_time}
               </option>
             ))}
           </select>
@@ -98,7 +109,7 @@ const WritePrescription = () => {
           <input
             type="text" placeholder="e.g. Hypertension Stage 1"
             value={form.diagnosis} onChange={e => update('diagnosis', e.target.value)}
-            style={inputStyle}
+            className="form-control"
           />
         </Field>
 
@@ -107,7 +118,7 @@ const WritePrescription = () => {
           <textarea
             rows={4} placeholder="Medicine name, dosage, frequency..."
             value={form.prescription} onChange={e => update('prescription', e.target.value)}
-            style={{ ...inputStyle, resize: 'vertical' }}
+            className="form-control" style={{ resize: 'vertical' }}
           />
         </Field>
 
@@ -116,19 +127,19 @@ const WritePrescription = () => {
           <textarea
             rows={3} placeholder="Lab results, observations..."
             value={form.test_reports} onChange={e => update('test_reports', e.target.value)}
-            style={{ ...inputStyle, resize: 'vertical' }}
+            className="form-control" style={{ resize: 'vertical' }}
           />
         </Field>
 
         {error && (
-          <div style={{ background: '#2a1515', border: '1px solid #5a2020', borderRadius: '8px', padding: '0.7rem', color: '#f87171', fontSize: '0.82rem' }}>
+          <div className="auth-error">
             {error}
           </div>
         )}
 
         <button
           onClick={handleSubmit} disabled={loading}
-          style={{ background: '#2db87a', color: '#fff', border: 'none', padding: '0.85rem', borderRadius: '10px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', opacity: loading ? 0.7 : 1 }}
+          className="btn-primary" style={{ width: '100%', opacity: loading ? 0.7 : 1, padding: '0.85rem' }}
         >
           {loading ? 'Saving...' : 'Save Prescription'}
         </button>
@@ -137,15 +148,9 @@ const WritePrescription = () => {
   );
 };
 
-const inputStyle: React.CSSProperties = {
-  background: '#0f1a14', border: '1px solid #1e2d22', borderRadius: '8px',
-  padding: '0.65rem 0.9rem', fontSize: '0.875rem', color: '#fff', outline: 'none', width: '100%',
-  boxSizing: 'border-box',
-};
-
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-    <label style={{ fontSize: '0.85rem', fontWeight: 500, color: '#9ca3af' }}>{label}</label>
+  <div className="form-group">
+    <label className="form-label">{label}</label>
     {children}
   </div>
 );

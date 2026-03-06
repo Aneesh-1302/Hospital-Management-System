@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { patientAPI, medicalRecordAPI, appointmentAPI } from '../../services/api';
 import type { Patient, MedicalRecord, Appointment } from '../../types';
+import { formatDate } from '../../utils/format';
 
 const PatientDetails = () => {
   const { id } = useParams();
@@ -38,7 +39,7 @@ const PatientDetails = () => {
   }, [id]);
 
   if (loading) {
-    return <div style={{ padding: '2rem', color: '#4a5568' }}>Loading patient details...</div>;
+    return <div style={{ padding: '2rem', color: 'var(--text-muted)' }}>Loading patient details...</div>;
   }
 
   if (!patient) {
@@ -51,88 +52,85 @@ const PatientDetails = () => {
   }
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px' }}>
+    <div className="dashboard-container">
       <button
         onClick={() => navigate(-1)}
-        style={{ background: 'none', border: 'none', color: '#1a4a7a', cursor: 'pointer', fontSize: '0.875rem', marginBottom: '1rem', padding: 0 }}
+        style={{ background: 'none', border: 'none', color: 'var(--brand-primary)', cursor: 'pointer', fontSize: '0.875rem', marginBottom: '1rem', padding: 0 }}
       >
         ← Back
       </button>
 
       {/* Patient header */}
-      <div style={{
-        background: 'linear-gradient(135deg, #0a2540, #1a4a7a)',
-        borderRadius: '12px', padding: '1.5rem', color: '#fff', marginBottom: '1.5rem',
+      <div className="dashboard-section" style={{
+        padding: '1.5rem', marginBottom: '1.5rem',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{
-            width: '56px', height: '56px', background: 'rgba(255,255,255,0.15)',
+            width: '56px', height: '56px', background: 'var(--bg-hover)', border: '1px solid var(--border-color)',
             borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem',
           }}>👤</div>
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.25rem' }}>{patient.name}</h2>
-            <p style={{ margin: '0.25rem 0 0', color: '#94b8d8', fontSize: '0.85rem' }}>
-              {patient.age} yrs · {patient.gender} · 🩸 {patient.blood_group}
+            <h2 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-primary)' }}>{patient.name}</h2>
+            <p style={{ margin: '0.25rem 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+              {patient.age} yrs &middot; {patient.gender} &middot; 🩸 {patient.blood_group}
             </p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: '2rem' }}>
-          <div><p style={{ margin: 0, fontSize: '0.75rem', color: '#94b8d8' }}>Contact</p><p style={{ margin: 0 }}>{patient.contact}</p></div>
-          <div><p style={{ margin: 0, fontSize: '0.75rem', color: '#94b8d8' }}>Address</p><p style={{ margin: 0, fontSize: '0.85rem' }}>{patient.address}</p></div>
+          <div><p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Contact</p><p style={{ margin: 0, color: 'var(--text-primary)' }}>{patient.contact}</p></div>
+          <div><p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Address</p><p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-primary)' }}>{patient.address}</p></div>
         </div>
       </div>
 
       {/* Medical history */}
       {patient.medical_history && (
-        <div style={{ background: '#fffbeb', border: '1px solid #f6e05e', borderRadius: '10px', padding: '1rem', marginBottom: '1.5rem', fontSize: '0.875rem', color: '#744210' }}>
-          📝 <strong>Medical History:</strong> {patient.medical_history}
+        <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderLeft: '4px solid var(--brand-primary)', borderRadius: '8px', padding: '1.25rem 1.5rem', marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+          📝 <strong style={{ color: 'var(--brand-primary)', marginRight: '0.5rem' }}>Medical History:</strong> {patient.medical_history}
         </div>
       )}
 
       {/* Records */}
-      <h2 style={{ fontSize: '1rem', fontWeight: 600, color: '#4a5568', marginBottom: '1rem' }}>Medical Records</h2>
+      <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '1rem' }}>Medical Records</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
         {records.length === 0 ? (
-          <p style={{ fontSize: '0.875rem', color: '#a0aec0' }}>No medical records available.</p>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>No medical records available.</p>
         ) : (
           records.map(r => (
-            <div key={r.record_id} style={{
-              background: '#fff', border: '1px solid #e2e8f0', borderLeft: '4px solid #1a4a7a',
-              borderRadius: '10px', padding: '1rem 1.25rem',
+            <div key={r.record_id} className="list-item" style={{
+              background: 'var(--bg-main)', borderLeft: '4px solid var(--brand-primary)',
+              padding: '1rem 1.25rem', display: 'block'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontWeight: 600, color: '#1a202c' }}>{r.diagnosis}</span>
-                <span style={{ fontSize: '0.75rem', color: '#a0aec0' }}>
-                  {r.created_at ? new Date(r.created_at).toLocaleDateString() : 'N/A'}
+                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{r.diagnosis}</span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  {r.created_at ? formatDate(r.created_at) : 'N/A'}
                 </span>
               </div>
-              <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#4a5568' }}>💊 {r.prescription}</p>
+              <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>💊 {r.prescription}</p>
             </div>
           ))
         )}
       </div>
 
       {/* Appointments */}
-      <h2 style={{ fontSize: '1rem', fontWeight: 600, color: '#4a5568', marginBottom: '1rem' }}>Past & Upcoming Appointments</h2>
+      <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '1rem' }}>Past & Upcoming Appointments</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
         {appointments.length === 0 ? (
-          <p style={{ fontSize: '0.875rem', color: '#a0aec0' }}>No appointments found.</p>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>No appointments found.</p>
         ) : (
           appointments.map(a => (
-            <div key={a.appointment_id} style={{
-              background: '#fff', border: '1px solid #e2e8f0',
-              borderRadius: '10px', padding: '0.75rem 1rem',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+            <div key={a.appointment_id} className="list-item" style={{
+              padding: '0.75rem 1rem'
             }}>
               <div>
-                <p style={{ margin: 0, fontWeight: 500, fontSize: '0.875rem' }}>{a.doctor_name || 'Doctor'}</p>
-                <p style={{ margin: 0, fontSize: '0.75rem', color: '#718096' }}>{a.appointment_date} @ {a.appointment_time}</p>
+                <p style={{ margin: 0, fontWeight: 500, fontSize: '0.875rem', color: 'var(--text-primary)' }}>{a.doctor_name || 'Doctor'}</p>
+                <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>{formatDate(a.appointment_date)} @ {a.appointment_time}</p>
               </div>
-              <span style={{
-                fontSize: '0.7rem', fontWeight: 600, padding: '0.2rem 0.5rem', borderRadius: '4px',
-                background: a.status === 'Confirmed' ? '#c6f6d5' : a.status === 'Pending' ? '#feebc8' : '#fed7d7',
-                color: a.status === 'Confirmed' ? '#22543d' : a.status === 'Pending' ? '#744210' : '#822727'
+              <span className="badge" style={{
+                background: a.status === 'Confirmed' ? '#1a2e22' : a.status === 'Pending' ? '#2a2010' : '#2a1515',
+                color: a.status === 'Confirmed' ? 'var(--brand-primary)' : a.status === 'Pending' ? '#f59e0b' : '#f87171',
+                border: `1px solid ${a.status === 'Confirmed' ? 'var(--brand-primary)' : a.status === 'Pending' ? '#f59e0b' : '#f87171'}44`
               }}>
                 {a.status}
               </span>
@@ -145,13 +143,15 @@ const PatientDetails = () => {
       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
         <button
           onClick={() => navigate('/doctor/prescribe', { state: { patientId: patient.patient_id } })}
-          style={{ background: '#1a4a7a', color: '#fff', border: 'none', padding: '0.7rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
+          className="btn-primary" style={{ padding: '0.7rem 1.5rem', fontSize: '0.9rem' }}
         >
           + Write Prescription
         </button>
         <button
           onClick={() => navigate('/doctor/reports', { state: { patientId: patient.patient_id } })}
-          style={{ background: '#f7fafc', color: '#4a5568', border: '1px solid #e2e8f0', padding: '0.7rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 500 }}
+          style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '0.7rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 500, transition: 'all 0.2s' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text-muted)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color)'; }}
         >
           Upload Report
         </button>

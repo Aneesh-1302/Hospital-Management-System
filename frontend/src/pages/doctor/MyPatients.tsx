@@ -15,17 +15,17 @@ const MyPatients = () => {
   }, []);
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '750px', color: '#fff' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.25rem' }}>My Patients</h1>
-      <p style={{ color: '#6b7f72', marginBottom: '1.5rem' }}>
+    <div className="dashboard-container">
+      <h1 className="page-title">My Patients</h1>
+      <p className="page-subtitle">
         {loading ? '...' : `${patients.length} patient(s) registered`}
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {loading ? (
-          <p style={{ color: '#6b7f72' }}>Loading patients...</p>
+          <p style={{ color: 'var(--text-muted)' }}>Loading patients...</p>
         ) : patients.length === 0 ? (
-          <p style={{ color: '#6b7f72', textAlign: 'center', padding: '3rem' }}>No patients found.</p>
+          <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '3rem' }}>No patients found.</p>
         ) : (
           patients.map(p => <PatientCard key={p.patient_id} patient={p} />)
         )}
