@@ -636,13 +636,13 @@ body,
 }
 
 .step-content-fade {
-  animation: stepFadeIn 0.4s ease-out;
+  animation: stepFadeIn 0.2s ease-out;
 }
 
 @keyframes stepFadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(6px);
   }
 
   to {
@@ -805,7 +805,7 @@ body,
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(16px);
   }
 
   to {
@@ -840,15 +840,15 @@ body,
 
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateY(14px);
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
   will-change: transform, opacity;
 }
 
 .reveal-scale {
   opacity: 0;
-  transform: scale(0.95);
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: scale(0.96);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .reveal-visible {
@@ -857,7 +857,7 @@ body,
 }
 
 .dashboard-container {
-  animation: dashboardEntry 0.6s ease-out forwards;
+  animation: dashboardEntry 0.35s ease-out forwards;
 }
 
 /* Float animation class */
@@ -865,51 +865,51 @@ body,
   animation: float 6s ease-in-out infinite;
 }
 
-/* Staggered Delays - 150ms increments for a clearer sequence */
+/* Staggered Delays - 80ms increments for a snappier sequence */
 .delay-1 {
-  transition-delay: 0.15s;
+  transition-delay: 0.08s;
 }
 
 .delay-2 {
-  transition-delay: 0.3s;
+  transition-delay: 0.16s;
 }
 
 .delay-3 {
-  transition-delay: 0.45s;
+  transition-delay: 0.24s;
 }
 
 .delay-4 {
-  transition-delay: 0.6s;
+  transition-delay: 0.32s;
 }
 
 .delay-5 {
-  transition-delay: 0.75s;
+  transition-delay: 0.4s;
 }
 
 .delay-6 {
-  transition-delay: 0.9s;
+  transition-delay: 0.48s;
 }
 
 .delay-7 {
-  transition-delay: 1.05s;
+  transition-delay: 0.56s;
 }
 
 .delay-8 {
-  transition-delay: 1.2s;
+  transition-delay: 0.64s;
 }
 
 .delay-9 {
-  transition-delay: 1.35s;
+  transition-delay: 0.72s;
 }
 
 .delay-10 {
-  transition-delay: 1.5s;
+  transition-delay: 0.8s;
 }
 
 .delay-11 {
-  transition-delay: 1.65s;
+  transition-delay: 0.88s;
 }
 
 .delay-12 {
-  transition-delay: 1.8s;
+  transition-delay: 0.96s;
 }
