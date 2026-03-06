@@ -1,13 +1,21 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const compression = require("compression");
+const helmet = require("helmet");
 
 const app = express();
+
+// ─── Security & Compression Middleware ────────────────────────────────────────
+// helmet sets secure HTTP headers (X-Frame-Options, X-XSS-Protection, etc.)
+app.use(helmet());
+// compression gzips all responses, reducing payload size significantly
+app.use(compression());
 
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// ─── Routes ───────────────────────────────────────────────────────────────────
 const patientRoutes = require("./routes/patientRoutes");
 app.use("/api/patients", patientRoutes);
 

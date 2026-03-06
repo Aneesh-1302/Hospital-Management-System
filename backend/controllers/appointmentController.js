@@ -5,38 +5,32 @@ const createAppointment = async (req, res) => {
   try {
     const { patient_id, doctor_id, appointment_date, appointment_time } = req.body;
 
-    // 1️⃣ Check patient exists
-    const [patient] = await db.execute(
-      "SELECT patient_id FROM Patients WHERE patient_id = ?",
-      [patient_id]
-    );
+    // Check patient + doctor + double-booking in parallel to reduce round-trips
+    const [
+      [patient],
+      [doctor],
+      [existing]
+    ] = await Promise.all([
+      db.execute("SELECT patient_id FROM Patients WHERE patient_id = ?", [patient_id]),
+      db.execute("SELECT doctor_id FROM Doctors WHERE doctor_id = ?", [doctor_id]),
+      db.execute(
+        `SELECT appointment_id FROM Appointments
+         WHERE doctor_id = ? AND appointment_date = ? AND appointment_time = ?
+         AND status != 'Cancelled'`,
+        [doctor_id, appointment_date, appointment_time]
+      ),
+    ]);
+
     if (patient.length === 0)
       return res.status(400).json({ message: "Patient not found" });
-
-    // 2️⃣ Check doctor exists
-    const [doctor] = await db.execute(
-      "SELECT doctor_id FROM Doctors WHERE doctor_id = ?",
-      [doctor_id]
-    );
     if (doctor.length === 0)
       return res.status(400).json({ message: "Doctor not found" });
-
-    // 3️⃣ Prevent double booking
-    const [existing] = await db.execute(
-      `SELECT appointment_id FROM Appointments
-       WHERE doctor_id = ?
-       AND appointment_date = ?
-       AND appointment_time = ?
-       AND status != 'Cancelled'`,
-      [doctor_id, appointment_date, appointment_time]
-    );
     if (existing.length > 0)
       return res.status(400).json({ message: "Time slot already booked" });
 
-    // 4️⃣ Insert appointment
+    // Insert appointment
     const [result] = await db.execute(
-      `INSERT INTO Appointments
-       (patient_id, doctor_id, appointment_date, appointment_time)
+      `INSERT INTO Appointments (patient_id, doctor_id, appointment_date, appointment_time)
        VALUES (?, ?, ?, ?)`,
       [patient_id, doctor_id, appointment_date, appointment_time]
     );
@@ -55,12 +49,13 @@ const createAppointment = async (req, res) => {
 const getAllAppointments = async (req, res) => {
   try {
     const [rows] = await db.execute(`
-      SELECT a.*,
+      SELECT a.appointment_id, a.patient_id, a.doctor_id,
+             a.appointment_date, a.appointment_time, a.status,
              p.name AS patient_name,
              d.name AS doctor_name
       FROM Appointments a
       JOIN Patients p ON a.patient_id = p.patient_id
-      JOIN Doctors d ON a.doctor_id = d.doctor_id
+      JOIN Doctors  d ON a.doctor_id  = d.doctor_id
       ORDER BY a.appointment_date DESC, a.appointment_time DESC
     `);
     res.json({ message: "Appointments fetched successfully", data: rows });
@@ -71,27 +66,22 @@ const getAllAppointments = async (req, res) => {
 };
 
 // GET MY APPOINTMENTS (Patient)
+// Previously: 2 serial queries (lookup patient_id, then fetch appointments)
+// Now: single JOIN — eliminates the extra round-trip
 const getMyAppointments = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Get patient_id from user_id
-    const [patientRows] = await db.execute(
-      "SELECT patient_id FROM Patients WHERE user_id = ?",
-      [userId]
-    );
-    if (patientRows.length === 0)
-      return res.status(404).json({ message: "Patient profile not found" });
-
-    const patientId = patientRows[0].patient_id;
-
     const [rows] = await db.execute(
-      `SELECT a.*, d.name AS doctor_name, d.specialization
+      `SELECT a.appointment_id, a.patient_id, a.doctor_id,
+              a.appointment_date, a.appointment_time, a.status,
+              d.name AS doctor_name, d.specialization
        FROM Appointments a
-       JOIN Doctors d ON a.doctor_id = d.doctor_id
-       WHERE a.patient_id = ?
+       JOIN Patients p ON a.patient_id = p.patient_id
+       JOIN Doctors  d ON a.doctor_id  = d.doctor_id
+       WHERE p.user_id = ?
        ORDER BY a.appointment_date DESC, a.appointment_time DESC`,
-      [patientId]
+      [userId]
     );
 
     res.json({ message: "Your appointments fetched successfully", data: rows });
@@ -101,28 +91,23 @@ const getMyAppointments = async (req, res) => {
   }
 };
 
-// GET DOCTOR APPOINTMENTS (Doctor - filters by their own doctor_id)
+// GET DOCTOR APPOINTMENTS (Doctor)
+// Previously: 2 serial queries (lookup doctor_id, then fetch appointments)
+// Now: single JOIN — eliminates the extra round-trip
 const getDoctorAppointments = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Get doctor_id from user_id
-    const [doctorRows] = await db.execute(
-      "SELECT doctor_id FROM Doctors WHERE user_id = ?",
-      [userId]
-    );
-    if (doctorRows.length === 0)
-      return res.status(404).json({ message: "Doctor profile not found" });
-
-    const doctorId = doctorRows[0].doctor_id;
-
     const [rows] = await db.execute(
-      `SELECT a.*, p.name AS patient_name, p.age, p.gender
+      `SELECT a.appointment_id, a.patient_id, a.doctor_id,
+              a.appointment_date, a.appointment_time, a.status,
+              p.name AS patient_name, p.age, p.gender
        FROM Appointments a
+       JOIN Doctors  d ON a.doctor_id  = d.doctor_id
        JOIN Patients p ON a.patient_id = p.patient_id
-       WHERE a.doctor_id = ?
+       WHERE d.user_id = ?
        ORDER BY a.appointment_date DESC, a.appointment_time DESC`,
-      [doctorId]
+      [userId]
     );
 
     res.json({ message: "Doctor appointments fetched successfully", data: rows });
