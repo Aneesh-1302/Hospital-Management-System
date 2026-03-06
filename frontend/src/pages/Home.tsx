@@ -1,169 +1,146 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 import hospitalImg from '../assets/hospital.jpg';
 
 const Home = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  useScrollReveal(); // Initialize reveal animations on scroll
 
   return (
-    <div style={{ background: '#0f1a14', minHeight: '100vh', fontFamily: "'Segoe UI', sans-serif", color: '#fff' }}>
+    <div style={{ background: 'var(--bg-main)', minHeight: '100vh', fontFamily: "'Segoe UI', sans-serif", color: 'var(--text-primary)' }}>
 
       {/* ── NAVBAR ── */}
-      <nav style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '1.25rem 4rem', borderBottom: '1px solid #1e2d22',
-        position: 'sticky', top: 0, background: '#0f1a14', zIndex: 100,
-      }}>
+      <nav className="landing-navbar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ color: '#2db87a', fontSize: '1.3rem' }}>♥</span>
-          <span style={{ fontWeight: 700, fontSize: '1.15rem', letterSpacing: '-0.3px' }}>SmartCare</span>
+          <span style={{ color: 'var(--brand-primary)', fontSize: '1.3rem' }}>♥</span>
+          <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1.15rem', letterSpacing: '-0.3px' }}>SmartCare</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
-          <a href="#features" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: '0.9rem' }}>Features</a>
-          <a href="#about"    style={{ color: '#9ca3af', textDecoration: 'none', fontSize: '0.9rem' }}>About</a>
-          <button onClick={() => navigate('/login')} style={{
-            background: 'none', border: 'none', color: '#fff',
-            fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer',
-          }}>Sign In</button>
-          <button onClick={() => navigate('/register')} style={{
-            background: '#2db87a', border: 'none', color: '#fff',
-            padding: '0.55rem 1.3rem', borderRadius: '8px',
-            fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = '#25a06a')}
-          onMouseLeave={e => (e.currentTarget.style.background = '#2db87a')}
-          >Get Started</button>
+        <div className="landing-nav-links">
+          <a href="#features" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Features</a>
+          <a href="#about" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>About</a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {user ? (
+              <button onClick={() => navigate(`/${user.role}/dashboard`)} className="btn-primary" style={{ padding: '0.55rem 1.2rem' }}>
+                Dashboard →
+              </button>
+            ) : (
+              <>
+                <button onClick={() => navigate('/login')} className="btn-text">Sign In</button>
+                <button onClick={() => navigate('/register')} className="btn-primary" style={{ padding: '0.55rem 1.2rem' }}>
+                  Join Now
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '5rem 4rem 4rem', gap: '3rem', flexWrap: 'wrap',
-        minHeight: '85vh',
-      }}>
-        {/* Left */}
-        <div style={{ flex: '1 1 420px', maxWidth: '560px' }}>
-          <div style={{
+      <section className="landing-hero">
+        <div className="landing-hero-content">
+          <div className="reveal delay-1" style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            border: '1px solid #2db87a55', borderRadius: '99px',
-            padding: '0.3rem 1rem', marginBottom: '2rem',
-            color: '#2db87a', fontSize: '0.8rem', fontWeight: 500,
+            background: 'rgba(45, 184, 122, 0.08)',
+            border: '1px solid var(--brand-primary-faded)', borderRadius: '99px',
+            padding: '0.4rem 1.25rem', marginBottom: '1.5rem',
+            color: 'var(--brand-primary)', fontSize: '0.85rem', fontWeight: 600,
           }}>
-            <span>🛡</span> Trusted by 500+ hospitals
+            <span>🛡️</span> Trusted by 500+ clinics worldwide
           </div>
 
-          <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 3.8rem)', fontWeight: 800, lineHeight: 1.1, margin: '0 0 1.5rem' }}>
+          <h1 className="reveal delay-2" style={{ fontSize: 'clamp(2.5rem, 5vw, 3.8rem)', fontWeight: 800, lineHeight: 1.1, margin: '0 0 1.25rem', color: 'var(--text-primary)' }}>
             Smart Hospital<br />
-            <span style={{ color: '#2db87a' }}>Management</span><br />
-            System
+            <span style={{ color: 'var(--brand-primary)' }}>Management</span><br />
+            Reimagined
           </h1>
 
-          <p style={{ color: '#9ca3af', fontSize: '1rem', lineHeight: 1.7, maxWidth: '440px', marginBottom: '2.5rem' }}>
+          <p className="reveal delay-3" style={{ color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1.7, maxWidth: '440px', marginBottom: '2.5rem' }}>
             Digitize your hospital operations. Manage appointments, medical records,
-            billing, and prescriptions — all in one secure platform.
+            billing, and prescriptions — all in one secure, unified platform.
           </p>
 
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <button onClick={() => navigate('/register')} style={{
-              background: '#2db87a', border: 'none', color: '#fff',
-              padding: '0.85rem 2rem', borderRadius: '10px',
-              fontWeight: 700, fontSize: '1rem', cursor: 'pointer',
-            }}>Register Now</button>
-            <button onClick={() => navigate('/login')} style={{
-              background: 'transparent', border: '1.5px solid #3a3a3a', color: '#fff',
-              padding: '0.85rem 2rem', borderRadius: '10px',
-              fontWeight: 600, fontSize: '1rem', cursor: 'pointer',
-            }}>Sign In</button>
+          <div className="reveal delay-4" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            {user ? (
+              <button onClick={() => navigate(`/${user.role}/dashboard`)} className="btn-primary" style={{ padding: '0.85rem 2rem', fontSize: '1rem' }}>
+                Go to Dashboard
+              </button>
+            ) : (
+              <>
+                <button onClick={() => navigate('/register')} className="btn-primary" style={{ padding: '0.85rem 2.25rem', fontSize: '1rem' }}>
+                  Register Now
+                </button>
+                <button onClick={() => navigate('/login')} className="btn-secondary" style={{ padding: '0.85rem 2.25rem', fontSize: '1rem' }}>
+                  Sign In
+                </button>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Right card */}
-        <div style={{
-          flex: '1 1 360px', maxWidth: '600px',
-          borderRadius: '20px', overflow: 'hidden',
-          border: '1px solid #1e3326',
-          minHeight: '380px',
-        }}>
+        <div className="landing-hero-image-wrapper">
           <img
             src={hospitalImg}
-            alt="Hospital"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              display: 'block',
-            }}
+            alt="Healthcare professionals in a modern facility"
+            className="landing-hero-image"
           />
         </div>
       </section>
 
       {/* ── FEATURES ── */}
-      <section id="features" style={{ padding: '5rem 4rem', background: '#0c1610' }}>
-        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 700, margin: '0 0 1rem' }}>Everything You Need</h2>
-          <p style={{ color: '#9ca3af', fontSize: '1rem', maxWidth: '520px', margin: '0 auto' }}>
-            A comprehensive platform for patients and doctors to manage healthcare efficiently.
+      <section id="features" className="landing-features-section">
+        <div className="reveal" style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <h2 style={{ fontSize: '2.4rem', fontWeight: 800, margin: '0 0 1rem', color: 'var(--text-primary)' }}>Everything You Need</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', maxWidth: '520px', margin: '0 auto' }}>
+            A comprehensive, automated platform for patients and doctors to manage healthcare with precision.
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
           {[
-            { icon: '📅', title: 'Appointment Management', desc: 'Book, reschedule, or cancel appointments with ease. View doctor availability in real-time.' },
-            { icon: '🛡️', title: 'Secure Medical Records',  desc: 'Access your complete medical history, prescriptions, and test reports securely.' },
-            { icon: '💳', title: 'Billing & Payments',       desc: 'View itemized bills, track payment status, and manage consultation charges.' },
-          ].map(f => (
-            <div key={f.title} style={{
-              background: '#141f18', border: '1px solid #1e2d22',
-              borderRadius: '16px', padding: '2rem',
-              transition: 'border-color 0.2s, transform 0.2s',
-              cursor: 'default',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#2db87a55'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e2d22'; e.currentTarget.style.transform = 'none'; }}
-            >
+            { icon: '📅', title: 'Smart Appointments', desc: 'Book, reschedule, or cancel appointments with ease. Intelligent scheduling with real-time availability.' },
+            { icon: '🛡️', title: 'Universal Health Records', desc: 'Securely access and share your medical history, digital prescriptions, and test results.' },
+            { icon: '💳', title: 'Seamless Payments', desc: 'Unified billing and payment tracking. Handle consultation fees and hospital dues effortlessly.' },
+          ].map((f, i) => (
+            <div key={f.title} className={`landing-feature-card reveal delay-${i + 1}`}>
               <div style={{
-                width: '52px', height: '52px', background: '#2db87a',
-                borderRadius: '12px', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontSize: '1.4rem', marginBottom: '1.5rem',
+                width: '56px', height: '56px', background: 'rgba(45, 184, 122, 0.1)',
+                border: '1px solid var(--brand-primary-faded)',
+                borderRadius: '14px', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', fontSize: '1.5rem', marginBottom: '1.5rem',
               }}>
                 {f.icon}
               </div>
-              <h3 style={{ fontWeight: 700, fontSize: '1.1rem', margin: '0 0 0.75rem' }}>{f.title}</h3>
-              <p style={{ color: '#9ca3af', fontSize: '0.9rem', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
+              <h3 style={{ fontWeight: 700, fontSize: '1.25rem', margin: '0 0 0.85rem', color: 'var(--text-primary)' }}>{f.title}</h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.7, margin: 0 }}>{f.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── CTA ── */}
-      <section id="about" style={{ padding: '6rem 4rem', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, margin: '0 0 1.25rem' }}>
-          Designed for Patients &amp; Doctors
+      <section id="about" className="landing-cta-section" style={{ padding: '8rem 2rem' }}>
+        <h2 className="reveal" style={{ fontSize: '2.8rem', fontWeight: 800, margin: '0 0 1.5rem', color: 'var(--text-primary)' }}>
+          Empowering Healthcare teams <br /> & Patients Everywhere
         </h2>
-        <p style={{ color: '#9ca3af', maxWidth: '600px', margin: '0 auto 2.5rem', lineHeight: 1.75 }}>
+        <p className="reveal delay-1" style={{ color: 'var(--text-muted)', fontSize: '1.1rem', maxWidth: '640px', margin: '0 auto 3rem', lineHeight: 1.8 }}>
           SmartCare provides role-based access so patients can manage their health journey while
-          doctors can efficiently handle diagnoses, prescriptions, and patient records — all from
-          one unified dashboard.
+          doctors can efficiently handle diagnoses, prescriptions, and patient records.
         </p>
-        <button onClick={() => navigate('/register')} style={{
-          background: '#2db87a', border: 'none', color: '#fff',
-          padding: '1rem 2.5rem', borderRadius: '10px',
-          fontWeight: 700, fontSize: '1rem', cursor: 'pointer',
-        }}>
-          Get Started Today
+        <button onClick={() => user ? navigate(`/${user.role}/dashboard`) : navigate('/register')} className="reveal delay-2 btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.1rem' }}>
+          {user ? 'Jump to Dashboard' : 'Get Started Now'}
         </button>
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{
-        borderTop: '1px solid #1e2d22', padding: '1.5rem 4rem',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        color: '#4a6355', fontSize: '0.82rem', flexWrap: 'wrap', gap: '0.5rem',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <span style={{ color: '#2db87a' }}>♥</span> SmartCare HMS
+      <footer className="landing-footer">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+          <span style={{ color: 'var(--brand-primary)', fontSize: '1.2rem' }}>♥</span> SmartCare HMS
         </div>
-        <span>© 2026 All rights reserved.</span>
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+          <span style={{ opacity: 0.8 }}>© 2026 SmartCare. All rights reserved.</span>
+        </div>
       </footer>
 
     </div>
