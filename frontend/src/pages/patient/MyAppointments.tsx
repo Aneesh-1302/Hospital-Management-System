@@ -30,9 +30,9 @@ const MyAppointments = () => {
   const filtered = filter === 'All' ? appointments : appointments.filter(a => a.status === filter);
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '750px', color: '#fff' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.25rem' }}>My Appointments</h1>
-      <p style={{ color: '#6b7f72', marginBottom: '1.5rem' }}>{appointments.length} total appointments</p>
+    <div className="dashboard-container">
+      <h1 className="page-title">My Appointments</h1>
+      <p className="page-subtitle">{appointments.length} total appointments</p>
 
       {/* Filter tabs */}
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
@@ -42,8 +42,8 @@ const MyAppointments = () => {
             style={{
               padding: '0.4rem 1rem', borderRadius: '99px', border: 'none',
               cursor: 'pointer', fontSize: '0.82rem', fontWeight: filter === f ? 600 : 400,
-              background: filter === f ? '#2db87a' : '#1e2d22',
-              color: filter === f ? '#fff' : '#6b7f72',
+              background: filter === f ? 'var(--brand-primary)' : 'var(--border-color)',
+              color: filter === f ? 'var(--text-primary)' : 'var(--text-muted)',
             }}
           >
             {f}
@@ -53,9 +53,9 @@ const MyAppointments = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {loading ? (
-          <p style={{ color: '#6b7f72', textAlign: 'center', padding: '3rem' }}>Loading appointments...</p>
+          <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '3rem' }}>Loading appointments...</p>
         ) : filtered.length === 0 ? (
-          <p style={{ color: '#6b7f72', textAlign: 'center', padding: '3rem' }}>No appointments found.</p>
+          <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '3rem' }}>No appointments found.</p>
         ) : (
           filtered.map(a => (
             <AppointmentCard key={a.appointment_id} appointment={a} onCancel={handleCancel} />
