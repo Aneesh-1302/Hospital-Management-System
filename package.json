@@ -9,7 +9,9 @@
     "scripts": {
         "dev": "concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\"",
         "start": "concurrently \"npm run start -w backend\" \"npm run dev -w frontend\"",
-        "install:all": "npm install"
+        "seed": "npm run seed -w backend",
+        "install:all": "npm install",
+        "postinstall": "npm run seed"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.1",
