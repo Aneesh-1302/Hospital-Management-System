@@ -2,13 +2,17 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { appointmentAPI } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import { useScrollReveal } from '../../hooks/useScrollReveal';
 import type { Appointment } from '../../types';
+import { formatDate, formatDisplayName } from '../../utils/format';
 
 const DoctorDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useScrollReveal([loading]);
 
   useEffect(() => {
     appointmentAPI.getDoctor()
@@ -30,58 +34,59 @@ const DoctorDashboard = () => {
   ];
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '900px', color: '#fff' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>
-          Welcome, {user?.name || user?.email} 👨‍⚕️
-        </h1>
-        <p style={{ color: '#6b7f72', margin: '0.25rem 0 0' }}>Here's your schedule overview</p>
-      </div>
+    <div className="dashboard-container">
+      <h1 className="dashboard-greeting reveal">
+        Welcome, <span title={user?.email || ''} style={{ cursor: 'help', borderBottom: '1px dashed var(--border-color)' }}>
+          {formatDisplayName(user?.name, user?.email)}
+        </span> 👨‍⚕️
+      </h1>
+      <p className="dashboard-profile-info reveal delay-1">Here's your schedule overview</p>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-        {stats.map(s => (
-          <div key={s.label} style={{
-            background: s.color, borderRadius: '12px', padding: '1.25rem',
-            border: `1px solid ${s.accent}33`,
-          }}>
+      <div className="stats-grid">
+        {stats.map((s, i: number) => (
+          <div key={s.label} className={`stat-card reveal-scale delay-${i + 2}`} style={{
+            background: s.color, border: `1px solid ${s.accent}33`,
+            transition: 'all 0.3s ease'
+          }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0) scale(1)'}
+          >
             <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{s.icon}</div>
             <div style={{ fontSize: '2rem', fontWeight: 700, color: s.accent }}>
               {loading ? '—' : s.value}
             </div>
-            <div style={{ fontSize: '0.82rem', color: '#6b7f72', marginTop: '0.2rem' }}>{s.label}</div>
+            <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* Pending appointments */}
-      <div style={{ background: '#141f18', borderRadius: '12px', border: '1px solid #1e2d22', padding: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: '#fff', margin: 0 }}>Pending Approvals</h2>
+      <div className="dashboard-section reveal delay-6">
+        <div className="dashboard-section-header">
+          <h2 className="dashboard-section-title">Pending Approvals</h2>
           <button
             onClick={() => navigate('/doctor/appointments')}
-            style={{ background: 'transparent', border: 'none', color: '#2db87a', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}
+            style={{ background: 'transparent', border: 'none', color: 'var(--brand-primary)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}
           >
             View All →
           </button>
         </div>
         {loading ? (
-          <p style={{ color: '#6b7f72', textAlign: 'center', padding: '2rem' }}>Loading...</p>
+          <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>Loading...</p>
         ) : pending.length === 0 ? (
-          <p style={{ color: '#6b7f72', textAlign: 'center', padding: '2rem' }}>No pending appointments 🎉</p>
+          <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>No pending appointments 🎉</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {pending.map(a => (
-              <div key={a.appointment_id} style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '0.75rem 1rem', background: '#2a2010', borderRadius: '8px',
-                border: '1px solid #4a3a1044',
+            {pending.map((a: Appointment, i: number) => (
+              <div key={a.appointment_id} className={`list-item reveal delay-${i + 7}`} style={{
+                background: '#2a2010', borderColor: '#4a3a1044', padding: '0.75rem 1rem'
               }}>
                 <div>
-                  <p style={{ margin: 0, fontWeight: 500, color: '#fff', fontSize: '0.875rem' }}>{a.patient_name}</p>
-                  <p style={{ margin: 0, fontSize: '0.78rem', color: '#6b7f72' }}>{a.appointment_date} · {a.appointment_time}</p>
+                  <p style={{ margin: 0, fontWeight: 500, color: 'var(--text-primary)', fontSize: '0.875rem' }}>{a.patient_name}</p>
+                  <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)' }}>{formatDate(a.appointment_date)} &middot; {a.appointment_time}</p>
                 </div>
-                <span style={{ background: '#3a2a10', color: '#f59e0b', padding: '0.2rem 0.6rem', borderRadius: '99px', fontSize: '0.72rem', fontWeight: 600 }}>
+                <span className="badge" style={{ background: '#3a2a10', color: '#f59e0b', padding: '0.2rem 0.6rem' }}>
                   Pending
                 </span>
               </div>
