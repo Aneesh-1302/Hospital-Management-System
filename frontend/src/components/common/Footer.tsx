@@ -1,10 +1,10 @@
 const Footer = () => (
   <footer style={{
-    background: '#0c1610', borderTop: '1px solid #1e2d22',
-    padding: '1rem 2rem', textAlign: 'center',
-    fontSize: '0.78rem', color: '#4a6355',
+    background: 'var(--bg-dark)', borderTop: '1px solid var(--border-color)',
+    padding: '1rem', textAlign: 'center', flexWrap: 'wrap',
+    fontSize: '0.78rem', color: 'var(--text-muted)',
   }}>
-    <span style={{ color: '#2db87a' }}>♥</span> SmartCare HMS · © 2026 All rights reserved.
+    <span style={{ color: 'var(--brand-primary)' }}>♥</span> SmartCare HMS &middot; &copy; 2026 All rights reserved.
   </footer>
 );
 

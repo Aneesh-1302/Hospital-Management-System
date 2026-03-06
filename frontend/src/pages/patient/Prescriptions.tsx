@@ -15,15 +15,15 @@ const Prescriptions = () => {
   }, []);
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '750px', color: '#fff' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.25rem' }}>Prescriptions</h1>
-      <p style={{ color: '#6b7f72', marginBottom: '1.5rem' }}>
+    <div className="dashboard-container">
+      <h1 className="page-title">Prescriptions</h1>
+      <p className="page-subtitle">
         {loading ? '...' : `${records.length} prescriptions on record`}
       </p>
       {loading ? (
-        <p style={{ color: '#6b7f72' }}>Loading...</p>
+        <p style={{ color: 'var(--text-muted)' }}>Loading...</p>
       ) : records.length === 0 ? (
-        <p style={{ color: '#6b7f72', textAlign: 'center', padding: '3rem' }}>No prescriptions found.</p>
+        <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '3rem' }}>No prescriptions found.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {records.map(r => (

@@ -26,12 +26,12 @@ const UploadReports = () => {
 
   if (success) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', maxWidth: '500px', color: '#fff' }}>
+      <div className="dashboard-container" style={{ textAlign: 'center', maxWidth: '500px', margin: '0 auto' }}>
         <div style={{ fontSize: '3rem' }}>📁</div>
-        <h2 style={{ color: '#2db87a' }}>Report Uploaded!</h2>
+        <h2 style={{ color: 'var(--brand-primary)' }}>Report Uploaded!</h2>
         <button
           onClick={() => { setSuccess(false); setPatientId(''); setReportText(''); setFile(null); }}
-          style={{ background: '#2db87a', color: '#fff', border: 'none', padding: '0.7rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
+          className="btn-primary"
         >
           Upload Another
         </button>
@@ -40,17 +40,17 @@ const UploadReports = () => {
   }
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '620px', color: '#fff' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.25rem' }}>Upload Test Reports</h1>
-      <p style={{ color: '#6b7f72', marginBottom: '2rem' }}>Attach lab results or diagnostic reports to a patient</p>
+    <div className="dashboard-container">
+      <h1 className="page-title">Upload Test Reports</h1>
+      <p className="page-subtitle">Attach lab results or diagnostic reports to a patient</p>
 
-      <div style={{ background: '#141f18', border: '1px solid #1e2d22', borderRadius: '12px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <div className="dashboard-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         {/* Patient */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-          <label style={{ fontSize: '0.85rem', fontWeight: 500, color: '#9ca3af' }}>Select Patient *</label>
+        <div className="form-group">
+          <label className="form-label">Select Patient *</label>
           <select
             value={patientId} onChange={e => setPatientId(e.target.value)}
-            style={{ background: '#0f1a14', border: '1px solid #1e2d22', borderRadius: '8px', padding: '0.65rem 0.9rem', fontSize: '0.875rem', color: '#fff' }}
+            className="form-control"
           >
             <option value="">Choose patient</option>
             {patients.map(p => (
@@ -60,28 +60,32 @@ const UploadReports = () => {
         </div>
 
         {/* Report notes */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-          <label style={{ fontSize: '0.85rem', fontWeight: 500, color: '#9ca3af' }}>Report Summary</label>
+        <div className="form-group">
+          <label className="form-label">Report Summary</label>
           <textarea
             rows={4} placeholder="Enter lab results, observations, findings..."
             value={reportText} onChange={e => setReportText(e.target.value)}
-            style={{ background: '#0f1a14', border: '1px solid #1e2d22', borderRadius: '8px', padding: '0.65rem 0.9rem', fontSize: '0.875rem', color: '#fff', resize: 'vertical', outline: 'none' }}
+            className="form-control" style={{ resize: 'vertical' }}
           />
         </div>
 
         {/* File upload */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-          <label style={{ fontSize: '0.85rem', fontWeight: 500, color: '#9ca3af' }}>Attach File (PDF/Image)</label>
+        <div className="form-group">
+          <label className="form-label">Attach File (PDF/Image)</label>
           <div style={{
-            border: '2px dashed #1e2d22', borderRadius: '8px', padding: '1.5rem',
-            textAlign: 'center', cursor: 'pointer', background: '#0f1a14',
-          }}>
+            border: '2px dashed var(--border-color)', borderRadius: '8px', padding: '1.5rem',
+            textAlign: 'center', cursor: 'pointer', background: 'var(--bg-main)',
+            transition: 'border-color 0.2s ease',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--brand-primary-faded)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color)'; }}
+          >
             <input
               type="file" accept=".pdf,.jpg,.jpeg,.png"
               onChange={e => setFile(e.target.files?.[0] ?? null)}
               style={{ display: 'none' }} id="file-upload"
             />
-            <label htmlFor="file-upload" style={{ cursor: 'pointer', color: '#6b7f72', fontSize: '0.875rem' }}>
+            <label htmlFor="file-upload" style={{ cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.875rem', display: 'block', width: '100%' }}>
               {file ? `📎 ${file.name}` : '📎 Click to upload or drag a file here'}
             </label>
           </div>
@@ -89,7 +93,7 @@ const UploadReports = () => {
 
         <button
           onClick={handleSubmit}
-          style={{ background: '#2db87a', color: '#fff', border: 'none', padding: '0.85rem', borderRadius: '10px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer' }}
+          className="btn-primary" style={{ width: '100%', padding: '0.85rem' }}
         >
           Upload Report
         </button>
