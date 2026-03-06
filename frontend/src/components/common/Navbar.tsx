@@ -8,38 +8,24 @@ const Navbar = () => {
   const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
-    <nav style={{
-      background: '#0f1a14', borderBottom: '1px solid #1e2d22',
-      padding: '0 2rem', height: '60px',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      position: 'sticky', top: 0, zIndex: 100,
-    }}>
-      <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <span style={{ color: '#2db87a', fontSize: '1.2rem' }}>♥</span>
-        <span style={{ color: '#fff', fontWeight: 700, fontSize: '1rem' }}>SmartCare</span>
+    <nav className="navbar">
+      <Link to={user ? `/${user.role}/dashboard` : "/"} className="nav-brand">
+        <span className="nav-brand-icon">♥</span>
+        <span className="nav-brand-text">SmartCare</span>
       </Link>
 
       {user && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <span style={{
-            background: '#1a2e22', border: '1px solid #2db87a44',
-            color: '#2db87a', padding: '0.25rem 0.75rem',
-            borderRadius: '99px', fontSize: '0.75rem', fontWeight: 600,
-            textTransform: 'capitalize',
-          }}>
-            {user.role}
-          </span>
-          <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>{user.name}</span>
-          <button
-            onClick={handleLogout}
-            style={{
-              background: 'transparent', border: '1px solid #1e2d22',
-              color: '#9ca3af', padding: '0.4rem 1rem', borderRadius: '8px',
-              cursor: 'pointer', fontSize: '0.82rem', transition: 'all 0.2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#2db87a'; e.currentTarget.style.color = '#2db87a'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e2d22'; e.currentTarget.style.color = '#9ca3af'; }}
-          >
+        <div className="nav-user-section">
+          <div className="user-info">
+            <span className="user-role-badge">{user.role}</span>
+          </div>
+          <div className="navbar-divider" />
+          <button onClick={handleLogout} className="btn-logout">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
             Logout
           </button>
         </div>
