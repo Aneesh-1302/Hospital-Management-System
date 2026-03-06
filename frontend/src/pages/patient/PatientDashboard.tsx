@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { appointmentAPI, billingAPI, patientAPI } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -36,15 +36,44 @@ const PatientDashboard = () => {
     fetchData();
   }, []);
 
-  const upcoming = appointments.filter(a => a.status !== 'Cancelled');
-  const unpaidBills = bills.filter(b => b.payment_status !== 'Paid');
+  // ─── Memoized derived state ────────────────────────────────────────────────
+  // Recomputed only when the source arrays change, not on every render
+  const upcoming = useMemo(
+    () => appointments.filter(a => a.status !== 'Cancelled'),
+    [appointments]
+  );
+  const unpaidBills = useMemo(
+    () => bills.filter(b => b.payment_status !== 'Paid'),
+    [bills]
+  );
+  const stats = useMemo(
+    () => [
+      { label: 'Appointments', value: upcoming.length, icon: '📅', path: '/patient/appointments', accent: 'var(--brand-primary)' },
+      { label: 'Medical Records', value: 0, icon: '📋', path: '/patient/records', accent: '#3b82f6' },
+      { label: 'Pending Bills', value: unpaidBills.length, icon: '💳', path: '/patient/billing', accent: '#f87171' },
+      { label: 'Prescriptions', value: 0, icon: '💊', path: '/patient/prescriptions', accent: '#a78bfa' },
+    ],
+    [upcoming.length, unpaidBills.length]
+  );
 
-  const stats = [
-    { label: 'Appointments', value: upcoming.length, icon: '📅', path: '/patient/appointments', accent: 'var(--brand-primary)' },
-    { label: 'Medical Records', value: 0, icon: '📋', path: '/patient/records', accent: '#3b82f6' },
-    { label: 'Pending Bills', value: unpaidBills.length, icon: '💳', path: '/patient/billing', accent: '#f87171' },
-    { label: 'Prescriptions', value: 0, icon: '💊', path: '/patient/prescriptions', accent: '#a78bfa' },
-  ];
+  // ─── Stable hover handlers ─────────────────────────────────────────────────
+  // useCallback so the same function reference is reused across renders
+  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>, accent: string) => {
+    e.currentTarget.style.borderColor = accent + '66';
+    e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
+  }, []);
+
+  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLDivElement>, accent: string) => {
+    e.currentTarget.style.borderColor =
+      accent === 'var(--brand-primary)' ? 'var(--border-color)' : accent + '22';
+    e.currentTarget.style.transform = 'translateY(0) scale(1)';
+  }, []);
+
+  // ─── Memoized display name ─────────────────────────────────────────────────
+  const displayName = useMemo(
+    () => formatDisplayName(profile?.name || user?.name, user?.email).split(' ')[0],
+    [profile?.name, user?.name, user?.email]
+  );
 
   if (loading) return <Spinner />;
 
@@ -54,7 +83,7 @@ const PatientDashboard = () => {
       <div className="dashboard-header">
         <h1 className="dashboard-greeting reveal">
           Good day, <span title={user?.email || ''} style={{ cursor: 'help', borderBottom: '1px dashed var(--border-color)' }}>
-            {formatDisplayName(profile?.name || user?.name, user?.email).split(' ')[0]}
+            {displayName}
           </span> 👋
         </h1>
         {profile && (
@@ -75,14 +104,8 @@ const PatientDashboard = () => {
               borderColor: s.accent === 'var(--brand-primary)' ? 'var(--border-color)' : s.accent + '22',
               transition: 'all 0.3s ease'
             }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = s.accent + '66';
-              e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = s.accent === 'var(--brand-primary)' ? 'var(--border-color)' : s.accent + '22';
-              e.currentTarget.style.transform = 'translateY(0) scale(1)';
-            }}
+            onMouseEnter={e => handleMouseEnter(e, s.accent)}
+            onMouseLeave={e => handleMouseLeave(e, s.accent)}
           >
             <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>{s.icon}</div>
             <div style={{ fontSize: '2rem', fontWeight: 700, color: s.accent }}>{s.value}</div>

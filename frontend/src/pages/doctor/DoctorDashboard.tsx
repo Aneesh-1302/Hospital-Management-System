@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { appointmentAPI } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -21,23 +21,41 @@ const DoctorDashboard = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const pending = appointments.filter(a => a.status === 'Pending');
-  const confirmed = appointments.filter(a => a.status === 'Confirmed');
-  const today = new Date().toISOString().split('T')[0];
-  const todayApps = appointments.filter(a => a.appointment_date === today);
+  // ─── Memoized derived state ────────────────────────────────────────────────
+  // today string computed once per render, not inside stats map
+  const today = useMemo(() => new Date().toISOString().split('T')[0], []);
 
-  const stats = [
+  const pending = useMemo(() => appointments.filter(a => a.status === 'Pending'), [appointments]);
+  const confirmed = useMemo(() => appointments.filter(a => a.status === 'Confirmed'), [appointments]);
+  const todayApps = useMemo(() => appointments.filter(a => a.appointment_date === today), [appointments, today]);
+
+  const stats = useMemo(() => [
     { label: 'Total Appointments', value: appointments.length, icon: '📅', color: '#1a2e22', accent: '#2db87a' },
     { label: 'Confirmed', value: confirmed.length, icon: '✅', color: '#1a2e22', accent: '#60a5fa' },
     { label: 'Pending', value: pending.length, icon: '⏳', color: '#2a2010', accent: '#f59e0b' },
     { label: "Today's", value: todayApps.length, icon: '🗓️', color: '#1a1a2e', accent: '#a78bfa' },
-  ];
+  ], [appointments.length, confirmed.length, pending.length, todayApps.length]);
+
+  // ─── Stable hover handlers ─────────────────────────────────────────────────
+  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
+  }, []);
+
+  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.transform = 'translateY(0) scale(1)';
+  }, []);
+
+  // ─── Memoized display name ─────────────────────────────────────────────────
+  const displayName = useMemo(
+    () => formatDisplayName(user?.name, user?.email),
+    [user?.name, user?.email]
+  );
 
   return (
     <div className="dashboard-container">
       <h1 className="dashboard-greeting reveal">
         Welcome, <span title={user?.email || ''} style={{ cursor: 'help', borderBottom: '1px dashed var(--border-color)' }}>
-          {formatDisplayName(user?.name, user?.email)}
+          {displayName}
         </span> 👨‍⚕️
       </h1>
       <p className="dashboard-profile-info reveal delay-1">Here's your schedule overview</p>
@@ -49,8 +67,8 @@ const DoctorDashboard = () => {
             background: s.color, border: `1px solid ${s.accent}33`,
             transition: 'all 0.3s ease'
           }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0) scale(1)'}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{s.icon}</div>
             <div style={{ fontSize: '2rem', fontWeight: 700, color: s.accent }}>
