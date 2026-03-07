@@ -4,15 +4,17 @@ const LoadingSpinner = ({ message = 'Loading...' }: { message?: string }) => (
     alignItems: 'center', justifyContent: 'center',
     padding: '3rem', gap: '1rem',
   }}>
-    <div style={{
-      width: '40px', height: '40px',
-      border: '4px solid var(--border-color)',
-      borderTop: '4px solid var(--brand-primary)',
-      borderRadius: '50%',
-      animation: 'spin 0.8s linear infinite',
-    }} />
+    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+      {[0, 1, 2, 3].map(i => (
+        <div key={i} style={{
+          width: '4px', height: '24px',
+          background: 'var(--brand-primary)',
+          animation: `pulse 0.8s ease-in-out ${i * 0.15}s infinite`,
+        }} />
+      ))}
+    </div>
     <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>{message}</p>
-    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    <style>{`@keyframes pulse { 0%, 100% { opacity: 0.3; transform: scaleY(0.6); } 50% { opacity: 1; transform: scaleY(1); } }`}</style>
   </div>
 );
 

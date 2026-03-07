@@ -85,8 +85,8 @@ const BookAppointment = () => {
 
       {/* Stepper Progress Bar */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '2.5rem', alignItems: 'center' }}>
-        <div style={{ flex: 1, height: '6px', background: 'var(--brand-primary)', borderRadius: '3px' }} />
-        <div style={{ flex: 1, height: '6px', background: step === 2 ? 'var(--brand-primary)' : 'var(--border-color)', borderRadius: '3px', transition: 'background 0.3s ease' }} />
+        <div style={{ flex: 1, height: '6px', background: 'var(--brand-primary)' }} />
+        <div style={{ flex: 1, height: '6px', background: step === 2 ? 'var(--brand-primary)' : 'var(--border-color)', transition: 'background 0.3s ease' }} />
       </div>
 
       {step === 1 && (
@@ -102,7 +102,7 @@ const BookAppointment = () => {
                 <button
                   key={f} onClick={() => setFilter(f)}
                   style={{
-                    padding: '0.4rem 1rem', borderRadius: '99px', border: 'none',
+                    padding: '0.4rem 1rem', border: 'none',
                     cursor: 'pointer', fontSize: '0.82rem', fontWeight: filter === f ? 600 : 400,
                     background: filter === f ? 'var(--brand-primary)' : 'var(--border-color)',
                     color: filter === f ? 'var(--text-primary)' : 'var(--text-muted)',
@@ -136,7 +136,7 @@ const BookAppointment = () => {
                         cursor: 'pointer', background: selectedDoctor?.doctor_id === doc.doctor_id ? 'var(--bg-hover)' : 'var(--bg-secondary)',
                         padding: '1.2rem',
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        borderRadius: '12px'
+
                       }}
                     >
                       <div>
@@ -181,7 +181,7 @@ const BookAppointment = () => {
               <label className="form-label" style={{ fontSize: '0.9rem' }}>Selected Doctor</label>
               <div style={{
                 background: 'var(--bg-main)', border: '1px solid var(--brand-primary-faded)',
-                borderRadius: '8px', padding: '1rem', fontSize: '1rem',
+                borderRadius: 0, padding: '1rem', fontSize: '1rem',
                 color: 'var(--text-primary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
               }}>
                 <div>

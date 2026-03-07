@@ -68,7 +68,7 @@ const PatientDetails = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{
             width: '56px', height: '56px', background: 'var(--bg-hover)', border: '1px solid var(--border-color)',
-            borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem',
+            borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem',
           }}>👤</div>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-primary)' }}>{patient.name}</h2>
@@ -85,7 +85,7 @@ const PatientDetails = () => {
 
       {/* Medical history */}
       {patient.medical_history && (
-        <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderLeft: '4px solid var(--brand-primary)', borderRadius: '8px', padding: '1.25rem 1.5rem', marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+        <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderLeft: '4px solid var(--brand-primary)', borderRadius: 0, padding: '1.25rem 1.5rem', marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
           📝 <strong style={{ color: 'var(--brand-primary)', marginRight: '0.5rem' }}>Medical History:</strong> {patient.medical_history}
         </div>
       )}
@@ -99,7 +99,7 @@ const PatientDetails = () => {
           records.map(r => (
             <div key={r.record_id} className="list-item" style={{
               background: 'var(--bg-main)', borderLeft: '4px solid var(--brand-primary)',
-              padding: '1rem 1.25rem', display: 'block'
+              display: 'block'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{r.diagnosis}</span>
@@ -120,9 +120,7 @@ const PatientDetails = () => {
           <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>No appointments found.</p>
         ) : (
           appointments.map(a => (
-            <div key={a.appointment_id} className="list-item" style={{
-              padding: '0.75rem 1rem'
-            }}>
+            <div key={a.appointment_id} className="list-item">
               <div>
                 <p style={{ margin: 0, fontWeight: 500, fontSize: '0.875rem', color: 'var(--text-primary)' }}>{a.doctor_name || 'Doctor'}</p>
                 <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>{formatDate(a.appointment_date)} @ {a.appointment_time}</p>
@@ -149,7 +147,7 @@ const PatientDetails = () => {
         </button>
         <button
           onClick={() => navigate('/doctor/reports', { state: { patientId: patient.patient_id } })}
-          style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '0.7rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 500, transition: 'all 0.2s' }}
+          style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '0.7rem 1.5rem', borderRadius: 0, cursor: 'pointer', fontWeight: 500, transition: 'all 0.2s' }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text-muted)'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color)'; }}
         >

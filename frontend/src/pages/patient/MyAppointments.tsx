@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AppointmentCard from '../../components/patient/AppointmentCard';
 import { appointmentAPI } from '../../services/api';
 import type { Appointment } from '../../types';
@@ -15,7 +15,7 @@ const MyAppointments = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleCancel = async (id: number) => {
+  const handleCancel = useCallback(async (id: number) => {
     try {
       await appointmentAPI.updateStatus(id, 'Cancelled');
       setAppointments(prev =>
@@ -25,7 +25,7 @@ const MyAppointments = () => {
       console.error('Cancel appointment error:', err);
       alert('Failed to cancel appointment. Please try again.');
     }
-  };
+  }, []);
 
   const filtered = filter === 'All' ? appointments : appointments.filter(a => a.status === filter);
 
@@ -40,7 +40,7 @@ const MyAppointments = () => {
           <button
             key={f} onClick={() => setFilter(f)}
             style={{
-              padding: '0.4rem 1rem', borderRadius: '99px', border: 'none',
+              padding: '0.4rem 1rem', border: 'none',
               cursor: 'pointer', fontSize: '0.82rem', fontWeight: filter === f ? 600 : 400,
               background: filter === f ? 'var(--brand-primary)' : 'var(--border-color)',
               color: filter === f ? 'var(--text-primary)' : 'var(--text-muted)',

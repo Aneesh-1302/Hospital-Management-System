@@ -73,7 +73,7 @@ const UploadReports = () => {
         <div className="form-group">
           <label className="form-label">Attach File (PDF/Image)</label>
           <div style={{
-            border: '2px dashed var(--border-color)', borderRadius: '8px', padding: '1.5rem',
+            border: '2px dashed var(--border-color)', padding: '1.5rem',
             textAlign: 'center', cursor: 'pointer', background: 'var(--bg-main)',
             transition: 'border-color 0.2s ease',
           }}

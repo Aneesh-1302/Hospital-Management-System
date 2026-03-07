@@ -204,7 +204,7 @@ const Register = () => {
 
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1.25rem' }}>
           {step > 1 && (
-            <button onClick={prevStep} className="btn-secondary" style={{ flex: 1, padding: '0.85rem', borderRadius: '10px', background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 600 }}>
+            <button onClick={prevStep} className="btn-secondary" style={{ flex: 1, padding: '0.85rem', background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 600 }}>
               Back
             </button>
           )}

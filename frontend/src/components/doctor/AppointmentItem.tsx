@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Appointment } from '../../types';
 import { formatDate } from '../../utils/format';
 
@@ -61,4 +62,4 @@ const AppointmentItem = ({ appointment, onConfirm, onCancel }: Props) => (
   </div>
 );
 
-export default AppointmentItem;
+export default React.memo(AppointmentItem);

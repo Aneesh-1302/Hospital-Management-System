@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import BillCard from '../../components/patient/BillCard';
 import { billingAPI } from '../../services/api';
 import type { Bill } from '../../types';
@@ -15,8 +15,16 @@ const Billing = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const total = bills.reduce((sum, b) => sum + b.total_amount, 0);
-  const unpaid = bills.filter(b => b.payment_status !== 'Paid').reduce((sum, b) => sum + b.total_amount, 0);
+  const total = useMemo(() => bills.reduce((sum, b) => sum + b.total_amount, 0), [bills]);
+  const unpaid = useMemo(() => bills.filter(b => b.payment_status !== 'Paid').reduce((sum, b) => sum + b.total_amount, 0), [bills]);
+
+  const filteredBills = useMemo(() => {
+    return bills.filter(b => {
+      if (filter === 'All') return true;
+      if (filter === 'Pending') return b.payment_status !== 'Paid';
+      return b.payment_status === 'Paid';
+    });
+  }, [bills, filter]);
 
   return (
     <div className="dashboard-container">
@@ -36,7 +44,7 @@ const Billing = () => {
           <button
             key={f} onClick={() => setFilter(f)}
             style={{
-              padding: '0.4rem 1rem', borderRadius: '99px', border: 'none',
+              padding: '0.4rem 1rem', border: 'none',
               cursor: 'pointer', fontSize: '0.82rem', fontWeight: filter === f ? 600 : 400,
               background: filter === f ? 'var(--brand-primary)' : 'var(--border-color)',
               color: filter === f ? 'var(--text-primary)' : 'var(--text-muted)',
@@ -53,11 +61,7 @@ const Billing = () => {
         <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '3rem' }}>No bills found.</p>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
-          {bills.filter(b => {
-            if (filter === 'All') return true;
-            if (filter === 'Pending') return b.payment_status !== 'Paid';
-            return b.payment_status === 'Paid';
-          }).map(b => <BillCard key={b.bill_id} bill={b} />)}
+          {filteredBills.map(b => <BillCard key={b.bill_id} bill={b} />)}
         </div>
       )}
     </div>

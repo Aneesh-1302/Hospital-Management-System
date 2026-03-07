@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { appointmentAPI, billingAPI, patientAPI } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -56,18 +56,6 @@ const PatientDashboard = () => {
     [upcoming.length, unpaidBills.length]
   );
 
-  // ─── Stable hover handlers ─────────────────────────────────────────────────
-  // useCallback so the same function reference is reused across renders
-  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>, accent: string) => {
-    e.currentTarget.style.borderColor = accent + '66';
-    e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
-  }, []);
-
-  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLDivElement>, accent: string) => {
-    e.currentTarget.style.borderColor =
-      accent === 'var(--brand-primary)' ? 'var(--border-color)' : accent + '22';
-    e.currentTarget.style.transform = 'translateY(0) scale(1)';
-  }, []);
 
   // ─── Memoized display name ─────────────────────────────────────────────────
   const displayName = useMemo(
@@ -100,12 +88,6 @@ const PatientDashboard = () => {
           <div
             key={s.label} onClick={() => navigate(s.path)}
             className={`stat-card reveal-scale delay-${i + 2}`}
-            style={{
-              borderColor: s.accent === 'var(--brand-primary)' ? 'var(--border-color)' : s.accent + '22',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={e => handleMouseEnter(e, s.accent)}
-            onMouseLeave={e => handleMouseLeave(e, s.accent)}
           >
             <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>{s.icon}</div>
             <div style={{ fontSize: '2rem', fontWeight: 700, color: s.accent }}>{s.value}</div>

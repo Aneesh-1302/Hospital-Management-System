@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import type { Patient } from '../../types';
 
 interface Props { patient: Patient }
@@ -18,7 +19,7 @@ const PatientCard = ({ patient }: Props) => {
           width: '44px', height: '44px',
           background: 'var(--bg-hover)',
           border: '1px solid var(--border-color)',
-          borderRadius: '50%',
+          borderRadius: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '1.25rem',
         }}>👤</div>
@@ -41,4 +42,4 @@ const PatientCard = ({ patient }: Props) => {
   );
 };
 
-export default PatientCard;
+export default React.memo(PatientCard);

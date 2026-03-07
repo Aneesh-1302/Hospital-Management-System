@@ -43,7 +43,7 @@ const Home = () => {
           <div className="reveal delay-1" style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
             background: 'rgba(45, 184, 122, 0.08)',
-            border: '1px solid var(--brand-primary-faded)', borderRadius: '99px',
+            border: '1px solid var(--brand-primary-faded)',
             padding: '0.4rem 1.25rem', marginBottom: '1.5rem',
             color: 'var(--brand-primary)', fontSize: '0.85rem', fontWeight: 600,
           }}>
@@ -107,7 +107,7 @@ const Home = () => {
               <div style={{
                 width: '56px', height: '56px', background: 'rgba(45, 184, 122, 0.1)',
                 border: '1px solid var(--brand-primary-faded)',
-                borderRadius: '14px', display: 'flex', alignItems: 'center',
+                display: 'flex', alignItems: 'center',
                 justifyContent: 'center', fontSize: '1.5rem', marginBottom: '1.5rem',
               }}>
                 {f.icon}

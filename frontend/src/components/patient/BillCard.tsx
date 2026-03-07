@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Bill } from '../../types';
 
 interface Props { bill: Bill }
@@ -6,7 +7,7 @@ const BillCard = ({ bill }: Props) => {
   const isPaid = bill.payment_status === 'Paid';
 
   return (
-    <div className="list-item" style={{ padding: '1.5rem' }}>
+    <div className="list-item">
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
         <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Bill #{bill.bill_id}</span>
         <span className="badge" style={{
@@ -47,4 +48,4 @@ const Row = ({ label, amount }: { label: string; amount: number }) => (
   </div>
 );
 
-export default BillCard;
+export default React.memo(BillCard);

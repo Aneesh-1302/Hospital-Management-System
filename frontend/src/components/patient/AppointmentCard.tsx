@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Appointment } from '../../types';
 import { formatDate } from '../../utils/format';
 
@@ -17,7 +18,7 @@ const AppointmentCard = ({ appointment, onCancel }: Props) => {
   const status = statusColors[appointment.status] ?? statusColors.Pending;
 
   return (
-    <div className="list-item" style={{ padding: '1.25rem 1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+    <div className="list-item" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1 }}>
         <p style={{ fontWeight: 600, color: 'var(--text-primary)', margin: 0, fontSize: '1.05rem' }}>
           {appointment.doctor_name ?? `Doctor #${appointment.doctor_id}`}
@@ -46,7 +47,7 @@ const AppointmentCard = ({ appointment, onCancel }: Props) => {
               border: '1px solid #fc818144',
               color: '#e53e3e',
               padding: '0.4rem 1rem',
-              borderRadius: '8px',
+              borderRadius: 0,
               cursor: 'pointer',
               fontSize: '0.8rem',
               fontWeight: 500,
@@ -63,4 +64,4 @@ const AppointmentCard = ({ appointment, onCancel }: Props) => {
   );
 };
 
-export default AppointmentCard;
+export default React.memo(AppointmentCard);

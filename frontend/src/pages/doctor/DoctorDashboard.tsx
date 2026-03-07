@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { appointmentAPI } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -36,14 +36,6 @@ const DoctorDashboard = () => {
     { label: "Today's", value: todayApps.length, icon: '🗓️', color: '#1a1a2e', accent: '#a78bfa' },
   ], [appointments.length, confirmed.length, pending.length, todayApps.length]);
 
-  // ─── Stable hover handlers ─────────────────────────────────────────────────
-  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
-  }, []);
-
-  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    e.currentTarget.style.transform = 'translateY(0) scale(1)';
-  }, []);
 
   // ─── Memoized display name ─────────────────────────────────────────────────
   const displayName = useMemo(
@@ -63,13 +55,7 @@ const DoctorDashboard = () => {
       {/* Stats */}
       <div className="stats-grid">
         {stats.map((s, i: number) => (
-          <div key={s.label} className={`stat-card reveal-scale delay-${i + 2}`} style={{
-            background: s.color, border: `1px solid ${s.accent}33`,
-            transition: 'all 0.3s ease'
-          }}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
+          <div key={s.label} className={`stat-card reveal-scale delay-${i + 2}`}>
             <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{s.icon}</div>
             <div style={{ fontSize: '2rem', fontWeight: 700, color: s.accent }}>
               {loading ? '—' : s.value}

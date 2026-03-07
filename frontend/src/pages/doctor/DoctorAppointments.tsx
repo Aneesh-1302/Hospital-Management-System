@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AppointmentItem from '../../components/doctor/AppointmentItem';
 import { appointmentAPI } from '../../services/api';
 import type { Appointment } from '../../types';
@@ -15,7 +15,7 @@ const DoctorAppointments = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleConfirm = async (id: number) => {
+  const handleConfirm = useCallback(async (id: number) => {
     try {
       await appointmentAPI.updateStatus(id, 'Confirmed');
       setAppointments(prev => prev.map(a => a.appointment_id === id ? { ...a, status: 'Confirmed' } : a));
@@ -23,9 +23,9 @@ const DoctorAppointments = () => {
       console.error('Confirm error:', err);
       alert('Failed to confirm appointment.');
     }
-  };
+  }, []);
 
-  const handleCancel = async (id: number) => {
+  const handleCancel = useCallback(async (id: number) => {
     try {
       await appointmentAPI.updateStatus(id, 'Cancelled');
       setAppointments(prev => prev.map(a => a.appointment_id === id ? { ...a, status: 'Cancelled' } : a));
@@ -33,7 +33,7 @@ const DoctorAppointments = () => {
       console.error('Cancel error:', err);
       alert('Failed to cancel appointment.');
     }
-  };
+  }, []);
 
   const filtered = filter === 'All' ? appointments : appointments.filter(a => a.status === filter);
 
@@ -45,7 +45,7 @@ const DoctorAppointments = () => {
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
         {(['All', 'Confirmed', 'Pending', 'Cancelled'] as const).map(f => (
           <button key={f} onClick={() => setFilter(f)} style={{
-            padding: '0.4rem 1rem', borderRadius: '99px', border: 'none', cursor: 'pointer',
+            padding: '0.4rem 1rem', border: 'none', cursor: 'pointer',
             fontSize: '0.82rem', fontWeight: filter === f ? 600 : 400,
             background: filter === f ? 'var(--brand-primary)' : 'var(--border-color)',
             color: filter === f ? 'var(--text-primary)' : 'var(--text-muted)',

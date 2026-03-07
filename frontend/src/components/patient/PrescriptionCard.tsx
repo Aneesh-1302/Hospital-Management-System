@@ -1,3 +1,4 @@
+import React from 'react';
 import type { MedicalRecord } from '../../types';
 
 interface Props { record: MedicalRecord }
@@ -5,7 +6,6 @@ interface Props { record: MedicalRecord }
 const PrescriptionCard = ({ record }: Props) => (
   <div className="list-item" style={{
     borderLeft: '4px solid var(--brand-primary)',
-    padding: '1.25rem 1.5rem',
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5rem',
@@ -19,7 +19,7 @@ const PrescriptionCard = ({ record }: Props) => (
     </p>
     <div style={{
       background: 'var(--bg-main)',
-      borderRadius: '8px',
+      borderRadius: 0,
       padding: '0.75rem 1rem',
       fontSize: '0.875rem',
       color: 'var(--text-secondary)',
@@ -29,7 +29,7 @@ const PrescriptionCard = ({ record }: Props) => (
     {record.test_reports && (
       <div style={{
         background: 'var(--bg-hover)',
-        borderRadius: '8px',
+        borderRadius: 0,
         padding: '0.75rem 1rem',
         fontSize: '0.875rem',
         color: 'var(--brand-primary)',
@@ -40,4 +40,4 @@ const PrescriptionCard = ({ record }: Props) => (
   </div>
 );
 
-export default PrescriptionCard;
+export default React.memo(PrescriptionCard);
