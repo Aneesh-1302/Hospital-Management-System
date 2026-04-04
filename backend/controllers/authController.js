@@ -30,7 +30,7 @@ const registerUser = async (req, res) => {
       [email, hashedPassword, role]
     );
 
-     if (role === "Patient") {
+    if (role === "Patient") {
       await db.execute(
         `INSERT INTO Patients (user_id, name)
          VALUES (?, ?)`,
