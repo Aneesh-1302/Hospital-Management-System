@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { normalizeRole } = require("../utils/roles");
 
 // Protect middleware
 const protect = (req, res, next) => {
@@ -31,7 +32,12 @@ const protect = (req, res, next) => {
 
 const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
-    if (!req.user || !allowedRoles.includes(req.user.role)) {
+    const userRole = normalizeRole(req.user?.role);
+    const normalizedAllowedRoles = allowedRoles
+      .map(normalizeRole)
+      .filter(Boolean);
+
+    if (!userRole || !normalizedAllowedRoles.includes(userRole)) {
       return res.status(403).json({
         message: "Access denied: insufficient permissions"
       });

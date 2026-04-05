@@ -1,14 +1,49 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("../config/db");
+const { normalizeRole } = require("../utils/roles");
+
+const ALLOWED_GENDERS = new Set(["Male", "Female", "Other"]);
 
 // ================= REGISTER =================
 const registerUser = async (req, res) => {
-  try {
-    const { email, password, role } = req.body;
+  let connection;
 
-    if (!email || !password || !role) {
+  try {
+    const {
+      email,
+      password,
+      role,
+      name,
+      age,
+      gender,
+      contact,
+      address,
+      blood_group,
+      specialization
+    } = req.body;
+    const normalizedRole = normalizeRole(role);
+    const normalizedGender = gender ? String(gender).trim() : null;
+    const parsedAge = age === undefined || age === null || age === ""
+      ? null
+      : Number(age);
+
+    if (!email || !password || !role || !name) {
       return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (!normalizedRole) {
+      return res.status(400).json({
+        message: "Invalid role. Allowed roles are Patient, Doctor, or Admin"
+      });
+    }
+
+    if (parsedAge !== null && (!Number.isInteger(parsedAge) || parsedAge < 0)) {
+      return res.status(400).json({ message: "Age must be a valid non-negative number" });
+    }
+
+    if (normalizedGender && !ALLOWED_GENDERS.has(normalizedGender)) {
+      return res.status(400).json({ message: "Invalid gender value" });
     }
 
     // Check if user already exists
@@ -23,28 +58,45 @@ const registerUser = async (req, res) => {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+    connection = await db.getConnection();
+    await connection.beginTransaction();
 
     // Insert into Users table
-    const [result] = await db.execute(
+    const [result] = await connection.execute(
       "INSERT INTO Users (email, password_hash, role) VALUES (?, ?, ?)",
-      [email, hashedPassword, role]
+      [email, hashedPassword, normalizedRole]
     );
 
-    if (role === "Patient") {
-      await db.execute(
-        `INSERT INTO Patients (user_id, name)
-         VALUES (?, ?)`,
-        [result.insertId, email] // temporary name
+    if (normalizedRole === "Patient") {
+      await connection.execute(
+        `INSERT INTO Patients (user_id, name, age, gender, contact, address, blood_group)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          result.insertId,
+          name,
+          parsedAge,
+          normalizedGender,
+          contact || null,
+          address || null,
+          blood_group || null
+        ]
       );
     }
 
-    if (role === "Doctor") {
-      await db.execute(
-        `INSERT INTO Doctors (user_id, name, specialization)
-         VALUES (?, ?, ?)`,
-        [result.insertId, email, "General"]
+    if (normalizedRole === "Doctor") {
+      await connection.execute(
+        `INSERT INTO Doctors (user_id, name, specialization, contact_details)
+         VALUES (?, ?, ?, ?)`,
+        [
+          result.insertId,
+          name,
+          specialization || "General",
+          contact || null
+        ]
       );
     }
+
+    await connection.commit();
 
     res.status(201).json({
       message: "User registered successfully",
@@ -52,15 +104,33 @@ const registerUser = async (req, res) => {
     });
 
   } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
     console.error("Register Error:", error);
     res.status(500).json({ message: "Server error during registration" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
 // ================= LOGIN =================
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
+    const normalizedRole = role ? normalizeRole(role) : null;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    if (role && !normalizedRole) {
+      return res.status(400).json({
+        message: "Invalid role. Allowed roles are Patient, Doctor, or Admin"
+      });
+    }
 
     const [rows] = await db.execute(
       "SELECT * FROM Users WHERE email = ?",
@@ -72,6 +142,10 @@ const loginUser = async (req, res) => {
     }
 
     const user = rows[0];
+
+    if (normalizedRole && user.role !== normalizedRole) {
+      return res.status(400).json({ message: "Invalid credentials for selected role" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
 
@@ -87,7 +161,8 @@ const loginUser = async (req, res) => {
 
     res.json({
       message: "Login successful",
-      token
+      token,
+      role: user.role
     });
 
   } catch (error) {
