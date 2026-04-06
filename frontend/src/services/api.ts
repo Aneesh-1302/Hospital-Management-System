@@ -66,8 +66,10 @@ export interface RegisterPayload {
 }
 
 export const authAPI = {
-    login: (data: LoginPayload) => post<{ token: string; message: string }>('/auth/login', data),
-    register: (data: RegisterPayload) => post<{ message: string; user_id: number }>('/auth/register', data),
+  login: (data: LoginPayload) => 
+    post<{ token: string; message: string; role: string }>('/auth/login', data),
+  register: (data: RegisterPayload) => 
+    post<{ message: string; user_id: number }>('/auth/register', data),
 };
 
 // ─── PATIENTS ─────────────────────────────────────────────────────────────────
