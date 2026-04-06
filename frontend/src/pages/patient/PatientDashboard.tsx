@@ -54,15 +54,14 @@ const PatientDashboard = () => {
   if (loading) return <Spinner />;
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100%', padding: '2rem', fontFamily: "'Segoe UI', sans-serif" }}>
-
+    <div className="dashboard-container">
       {/* Header */}
       <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
           Good day, {displayName} 👋
         </h1>
         {profile && (
-          <p style={{ color: '#64748b', margin: '0.25rem 0 0', fontSize: '0.9rem' }}>
+          <p style={{ color: 'var(--text-secondary)', margin: '0.25rem 0 0', fontSize: '0.9rem' }}>
             Blood Group: <span style={{ color: '#dc2626', fontWeight: 600 }}>{profile.blood_group || '—'}</span>
             &nbsp;·&nbsp;{profile.age ? `${profile.age} yrs` : '—'} · {profile.gender || '—'}
           </p>
@@ -72,9 +71,9 @@ const PatientDashboard = () => {
       {/* Patient Info Card */}
       {profile && (
         <div style={{
-          background: '#fff', borderRadius: '16px', padding: '1.5rem',
+          background: 'var(--bg-secondary)', borderRadius: '16px', padding: '1.5rem',
           boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '1.5rem',
-          border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap',
+          border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap',
         }}>
           <div style={{
             width: '64px', height: '64px', borderRadius: '50%',
@@ -83,8 +82,8 @@ const PatientDashboard = () => {
             fontSize: '1.75rem', flexShrink: 0,
           }}>👤</div>
           <div style={{ flex: 1 }}>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem' }}>{profile.name}</h2>
-            <p style={{ margin: 0, color: '#64748b', fontSize: '0.85rem' }}>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 0.25rem' }}>{profile.name}</h2>
+            <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
               {profile.age} years · {profile.gender} · Blood Group: <strong style={{ color: '#dc2626' }}>{profile.blood_group}</strong>
             </p>
           </div>
@@ -104,9 +103,9 @@ const PatientDashboard = () => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
         {stats.map(s => (
           <div key={s.label} onClick={() => navigate(s.path)} style={{
-            background: '#fff', borderRadius: '14px', padding: '1.25rem',
+            background: 'var(--bg-secondary)', borderRadius: '14px', padding: '1.25rem',
             boxShadow: '0 1px 3px rgba(0,0,0,0.07)', cursor: 'pointer',
-            border: '1px solid #f1f5f9', transition: 'transform 0.15s, box-shadow 0.15s',
+            border: '1px solid var(--border-color)', transition: 'transform 0.15s, box-shadow 0.15s',
           }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)'; }}
           onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.07)'; }}
@@ -115,7 +114,7 @@ const PatientDashboard = () => {
               {s.icon}
             </div>
             <div style={{ fontSize: '2rem', fontWeight: 700, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>{s.label}</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -124,9 +123,9 @@ const PatientDashboard = () => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
 
         {/* Recent Appointments */}
-        <div style={{ background: '#fff', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', border: '1px solid #f1f5f9' }}>
+        <div style={{ background: 'var(--bg-secondary)', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', border: '1px solid var(--border-color)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#0f172a', margin: 0 }}>Recent Appointments</h3>
+            <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Recent Appointments</h3>
             <button onClick={() => navigate('/patient/book')} style={{
               background: '#2db87a', color: '#fff', border: 'none',
               padding: '0.35rem 0.9rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600,
@@ -139,10 +138,10 @@ const PatientDashboard = () => {
               {appointments.slice(0, 3).map(a => (
                 <div key={a.appointment_id} style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '0.75rem', background: '#f8fafc', borderRadius: '10px', border: '1px solid #f1f5f9',
+                  padding: '0.75rem', background: 'var(--bg-main)', borderRadius: '10px', border: '1px solid var(--border-color)',
                 }}>
                   <div>
-                    <p style={{ margin: 0, fontWeight: 600, fontSize: '0.875rem', color: '#0f172a' }}>{a.doctor_name}</p>
+                    <p style={{ margin: 0, fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-primary)' }}>{a.doctor_name}</p>
                     <p style={{ margin: '0.1rem 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
                       {formatDate(a.appointment_date)} · {a.appointment_time}
                     </p>
@@ -155,8 +154,8 @@ const PatientDashboard = () => {
         </div>
 
         {/* Pending Bills */}
-        <div style={{ background: '#fff', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', border: '1px solid #f1f5f9' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#0f172a', margin: '0 0 1.25rem' }}>Pending Bills</h3>
+        <div style={{ background: 'var(--bg-secondary)', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', border: '1px solid var(--border-color)' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 1.25rem' }}>Pending Bills</h3>
           {unpaidBills.length === 0 ? (
             <p style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem', margin: 0 }}>No pending bills 🎉</p>
           ) : (
@@ -167,7 +166,7 @@ const PatientDashboard = () => {
                   padding: '0.75rem 1rem', background: '#fef2f2', borderRadius: '10px', border: '1px solid #fecaca',
                 }}>
                   <div>
-                    <p style={{ margin: 0, fontWeight: 600, fontSize: '0.875rem', color: '#0f172a' }}>Bill #{b.bill_id}</p>
+                    <p style={{ margin: 0, fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-primary)' }}>Bill #{b.bill_id}</p>
                     <p style={{ margin: '0.1rem 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>{b.issued_date}</p>
                   </div>
                   <div style={{ textAlign: 'right' }}>
