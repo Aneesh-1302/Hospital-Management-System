@@ -34,6 +34,11 @@ app.use("/api/billing", billingRoutes);
 const medicalRecordRoutes = require("./routes/medicalRecordRoutes");
 app.use("/api/medical-records", medicalRecordRoutes);
 
+const procedureRoutes = require("./routes/procedureRoutes");
+app.use("/api/procedures", procedureRoutes);
+
+const { startEmailQueueProcessor } = require("./services/emailQueueProcessor");
+
 // Health check
 app.get("/", (req, res) => {
     res.send("Backend is running ✅");
@@ -43,4 +48,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    startEmailQueueProcessor();
 });
