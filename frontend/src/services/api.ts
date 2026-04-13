@@ -105,6 +105,13 @@ export const appointmentAPI = {
 export const billingAPI = {
     getMy: () => get<ApiResponse<Bill[]>>('/billing/my'),
     getAll: () => get<ApiResponse<Bill[]>>('/billing'),
+    create: (data: {
+    patient_id: number;
+    appointment_id: number;
+    consultation_charges: number;
+    lab_charges: number;
+    medicine_charges: number;
+    }) => post<ApiResponse<null>>('/billing', data),
     updatePaymentStatus: (id: number, payment_status: string) =>
         put<ApiResponse<null>>(`/billing/${id}/status`, { payment_status }),
 };

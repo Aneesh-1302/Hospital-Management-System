@@ -2,20 +2,21 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const patientLinks = [
-  { to: '/patient/dashboard', label: 'Dashboard', icon: '⊞' },
-  { to: '/patient/appointments', label: 'Appointments', icon: '📅' },
-  { to: '/patient/book', label: 'Book Appointment', icon: '＋' },
-  { to: '/patient/records', label: 'Medical Records', icon: '📋' },
-  { to: '/patient/prescriptions', label: 'Prescriptions', icon: '💊' },
-  { to: '/patient/billing', label: 'Billing', icon: '💳' },
+  { to: '/patient/dashboard', label: 'Dashboard' },
+  { to: '/patient/appointments', label: 'Appointments'},
+  { to: '/patient/book', label: 'Book Appointment'},
+  { to: '/patient/records', label: 'Medical Records'},
+  { to: '/patient/prescriptions', label: 'Prescriptions'},
+  { to: '/patient/billing', label: 'Billing'},
 ];
 
 const doctorLinks = [
-  { to: '/doctor/dashboard', label: 'Dashboard', icon: '⊞' },
-  { to: '/doctor/appointments', label: 'Appointments', icon: '📅' },
-  { to: '/doctor/patients', label: 'My Patients', icon: '👥' },
-  { to: '/doctor/prescribe', label: 'Prescribe', icon: '💊' },
-  { to: '/doctor/reports', label: 'Upload Reports', icon: '📁' },
+  { to: '/doctor/dashboard', label: 'Dashboard'},
+  { to: '/doctor/appointments', label: 'Appointments'},
+  { to: '/doctor/patients', label: 'My Patients' },
+  { to: '/doctor/prescribe', label: 'Prescribe'},
+  { to: '/doctor/reports', label: 'Upload Reports'},
+  { to: '/doctor/billing', label: 'Create Bill'},
 ];
 
 const Sidebar = () => {
@@ -34,7 +35,6 @@ const Sidebar = () => {
             to={link.to}
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
           >
-            <span className="sidebar-link-icon">{link.icon}</span>
             {link.label}
           </NavLink>
         ))}
