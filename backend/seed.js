@@ -21,10 +21,23 @@ const DB_CONFIG = {
 };
 
 const DEMO_PASSWORD = "Demo@123";
+const PROCEDURE_PATIENT_TEMP_PASSWORD = "Temp@12345";
+const PROCEDURE_PATIENT_TEMP_PASSWORD_HASH = "$2b$10$ok.bs2z.lkAuV9CzOitYEOb/iLJ3TKmLQBA2zuWvj.WDUggzWArs.";
 
 // ─── Table DDL ────────────────────────────────────────────────────────────────
+const DROP_ROUTINES_AND_TRIGGERS = `
+  DROP TRIGGER IF EXISTS before_insert_patients_validate_age;
+  DROP TRIGGER IF EXISTS after_insert_appointments_queue_email;
+  DROP TRIGGER IF EXISTS after_insert_billing_queue_email;
+
+  DROP PROCEDURE IF EXISTS add_patient;
+  DROP PROCEDURE IF EXISTS book_appointment;
+  DROP PROCEDURE IF EXISTS generate_bill;
+`;
+
 const DROP_TABLES = `
   SET FOREIGN_KEY_CHECKS = 0;
+  DROP TABLE IF EXISTS email_queue;
   DROP TABLE IF EXISTS Medical_Records;
   DROP TABLE IF EXISTS Billing;
   DROP TABLE IF EXISTS Appointments;
@@ -125,6 +138,181 @@ const CREATE_MEDICAL_RECORDS = `
     FOREIGN KEY (appointment_id) REFERENCES Appointments(appointment_id) ON DELETE SET NULL
   );
 `;
+
+const CREATE_EMAIL_QUEUE = `
+  CREATE TABLE email_queue (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    recipient  VARCHAR(255) NOT NULL,
+    subject    VARCHAR(255) NOT NULL,
+    body       TEXT NOT NULL,
+    status     ENUM('PENDING','PROCESSING','SENT','FAILED') NOT NULL DEFAULT 'PENDING',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_email_queue_status_created_at (status, created_at)
+  );
+`;
+
+const CREATE_PATIENT_AGE_TRIGGER = `
+  CREATE TRIGGER before_insert_patients_validate_age
+  BEFORE INSERT ON Patients
+  FOR EACH ROW
+  BEGIN
+    IF NEW.age IS NOT NULL AND NEW.age < 0 THEN
+      SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Invalid patient age: age cannot be negative';
+    END IF;
+  END
+`;
+
+const CREATE_APPOINTMENT_EMAIL_TRIGGER = `
+  CREATE TRIGGER after_insert_appointments_queue_email
+  AFTER INSERT ON Appointments
+  FOR EACH ROW
+  BEGIN
+    DECLARE patient_email VARCHAR(255);
+    DECLARE patient_name VARCHAR(255);
+
+    SELECT u.email, p.name
+    INTO patient_email, patient_name
+    FROM Patients AS p
+    INNER JOIN Users AS u
+      ON u.user_id = p.user_id
+    WHERE p.patient_id = NEW.patient_id;
+
+    INSERT INTO email_queue (recipient, subject, body)
+    VALUES (
+      patient_email,
+      'Appointment Confirmation',
+      CONCAT(
+        'Hello ',
+        patient_name,
+        ', your appointment is booked on ',
+        DATE_FORMAT(NEW.appointment_date, '%Y-%m-%d'),
+        ' ',
+        TIME_FORMAT(NEW.appointment_time, '%H:%i:%s')
+      )
+    );
+  END
+`;
+
+const CREATE_BILLING_EMAIL_TRIGGER = `
+  CREATE TRIGGER after_insert_billing_queue_email
+  AFTER INSERT ON Billing
+  FOR EACH ROW
+  BEGIN
+    DECLARE patient_email VARCHAR(255);
+    DECLARE patient_name VARCHAR(255);
+
+    SELECT u.email, p.name
+    INTO patient_email, patient_name
+    FROM Patients AS p
+    INNER JOIN Users AS u
+      ON u.user_id = p.user_id
+    WHERE p.patient_id = NEW.patient_id;
+
+    INSERT INTO email_queue (recipient, subject, body)
+    VALUES (
+      patient_email,
+      'Billing Details',
+      CONCAT(
+        'Hello ',
+        patient_name,
+        ', your bill amount is ',
+        CHAR(8377 USING utf8mb4),
+        FORMAT(NEW.consultation_charges + NEW.lab_charges + NEW.medicine_charges, 2)
+      )
+    );
+  END
+`;
+
+const CREATE_ADD_PATIENT_PROCEDURE = `
+  CREATE PROCEDURE add_patient (
+    IN p_name VARCHAR(255),
+    IN p_email VARCHAR(255),
+    IN p_age INT,
+    IN p_gender VARCHAR(10),
+    IN p_contact VARCHAR(20)
+  )
+  BEGIN
+    DECLARE v_user_id INT;
+
+    INSERT INTO Users (email, password_hash, role)
+    VALUES (
+      p_email,
+      '${PROCEDURE_PATIENT_TEMP_PASSWORD_HASH}',
+      'Patient'
+    );
+
+    SET v_user_id = LAST_INSERT_ID();
+
+    INSERT INTO Patients (user_id, name, age, gender, contact)
+    VALUES (v_user_id, p_name, p_age, p_gender, p_contact);
+
+    SELECT
+      v_user_id AS user_id,
+      LAST_INSERT_ID() AS patient_id,
+      '${PROCEDURE_PATIENT_TEMP_PASSWORD}' AS temporary_password;
+  END
+`;
+
+const CREATE_BOOK_APPOINTMENT_PROCEDURE = `
+  CREATE PROCEDURE book_appointment (
+    IN p_patient_id INT,
+    IN p_doctor_id INT,
+    IN p_appointment_date DATETIME
+  )
+  BEGIN
+    INSERT INTO Appointments (
+      patient_id,
+      doctor_id,
+      appointment_date,
+      appointment_time,
+      status
+    )
+    VALUES (
+      p_patient_id,
+      p_doctor_id,
+      DATE(p_appointment_date),
+      TIME(p_appointment_date),
+      'Pending'
+    );
+
+    SELECT LAST_INSERT_ID() AS appointment_id;
+  END
+`;
+
+const CREATE_GENERATE_BILL_PROCEDURE = `
+  CREATE PROCEDURE generate_bill (
+    IN p_patient_id INT,
+    IN p_amount DECIMAL(10, 2)
+  )
+  BEGIN
+    INSERT INTO Billing (
+      patient_id,
+      consultation_charges,
+      lab_charges,
+      medicine_charges,
+      payment_status
+    )
+    VALUES (
+      p_patient_id,
+      p_amount,
+      0,
+      0,
+      'Pending'
+    );
+
+    SELECT LAST_INSERT_ID() AS bill_id;
+  END
+`;
+
+const DATABASE_OBJECTS = [
+    CREATE_PATIENT_AGE_TRIGGER,
+    CREATE_APPOINTMENT_EMAIL_TRIGGER,
+    CREATE_BILLING_EMAIL_TRIGGER,
+    CREATE_ADD_PATIENT_PROCEDURE,
+    CREATE_BOOK_APPOINTMENT_PROCEDURE,
+    CREATE_GENERATE_BILL_PROCEDURE,
+];
 
 // ─── Demo Data ────────────────────────────────────────────────────────────────
 const departments = [
@@ -329,6 +517,7 @@ async function seed() {
 
         // 1 ─ Drop old tables
         console.log("🗑️  Dropping existing tables…");
+        await conn.query(DROP_ROUTINES_AND_TRIGGERS);
         await conn.query(DROP_TABLES);
 
         // 2 ─ Create tables
@@ -340,6 +529,7 @@ async function seed() {
         await conn.query(CREATE_APPOINTMENTS);
         await conn.query(CREATE_BILLING);
         await conn.query(CREATE_MEDICAL_RECORDS);
+        await conn.query(CREATE_EMAIL_QUEUE);
 
         // 3 ─ Hash a single password for all demo users
         const hash = await bcrypt.hash(DEMO_PASSWORD, 10);
@@ -423,8 +613,15 @@ async function seed() {
             );
         }
 
-        // 11 ─ Summary
-        const tables = ["Users", "Departments", "Patients", "Doctors", "Appointments", "Billing", "Medical_Records"];
+        // 11 - Install procedures and triggers after demo data is loaded.
+        // This keeps setup complete without queuing emails for historical demo rows.
+        console.log("Installing stored procedures and triggers...");
+        for (const databaseObject of DATABASE_OBJECTS) {
+            await conn.query(databaseObject);
+        }
+
+        // 12 - Summary
+        const tables = ["Users", "Departments", "Patients", "Doctors", "Appointments", "Billing", "Medical_Records", "email_queue"];
         console.log("\n╔══════════════════════════════════════╗");
         console.log("║       🌱 SEED COMPLETE — SUMMARY     ║");
         console.log("╠══════════════════════════════════════╣");
