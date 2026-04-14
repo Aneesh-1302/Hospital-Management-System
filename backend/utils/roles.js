@@ -8,8 +8,7 @@ const normalizeRole = (role) => {
   if (typeof role !== "string") {
     return null;
   }
-
-  return ROLE_MAP[role.trim().toLowerCase()] || null;
+  return role.trim().toLowerCase();
 };
 
 module.exports = {

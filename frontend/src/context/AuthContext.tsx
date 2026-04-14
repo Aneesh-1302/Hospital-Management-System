@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { AuthUser, UserRole } from '../types';
-import { authAPI } from '../services/api';
+import { authAPI, patientAPI } from '../services/api';
 import { jwtDecode } from 'jwt-decode';
 
 interface JwtPayload {
@@ -44,18 +44,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const res = await authAPI.login({ email, password });
     const token = res.data.token;
 
-    // Decode JWT to get id and role
     const decoded = jwtDecode<JwtPayload>(token);
     const role: UserRole = decoded.role.toLowerCase() as UserRole;
+
+    localStorage.setItem('shms_token', token);
+
+    let name = email;
+    try {
+      if (role === 'patient') {
+        const profileRes = await patientAPI.getMyProfile();
+        name = profileRes.data.data?.name || email;
+      }
+    } catch {
+      name = email;
+    }
 
     const loggedInUser: AuthUser = {
       user_id: decoded.id,
       role,
       email,
-      name: email, // will be enriched from profile fetch in components
+      name,
     };
 
-    localStorage.setItem('shms_token', token);
     localStorage.setItem('shms_user', JSON.stringify(loggedInUser));
     setUser(loggedInUser);
   };

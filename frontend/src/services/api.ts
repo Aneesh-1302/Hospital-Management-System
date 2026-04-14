@@ -66,8 +66,10 @@ export interface RegisterPayload {
 }
 
 export const authAPI = {
-    login: (data: LoginPayload) => post<{ token: string; message: string }>('/auth/login', data),
-    register: (data: RegisterPayload) => post<{ message: string; user_id: number }>('/auth/register', data),
+  login: (data: LoginPayload) => 
+    post<{ token: string; message: string; role: string }>('/auth/login', data),
+  register: (data: RegisterPayload) => 
+    post<{ message: string; user_id: number }>('/auth/register', data),
 };
 
 // ─── PATIENTS ─────────────────────────────────────────────────────────────────
@@ -103,6 +105,14 @@ export const appointmentAPI = {
 export const billingAPI = {
     getMy: () => get<ApiResponse<Bill[]>>('/billing/my'),
     getAll: () => get<ApiResponse<Bill[]>>('/billing'),
+    getDoctor: () => get<ApiResponse<Bill[]>>('/billing/doctor'),
+    create: (data: {
+    patient_id: number;
+    appointment_id: number;
+    consultation_charges: number;
+    lab_charges: number;
+    medicine_charges: number;
+    }) => post<ApiResponse<null>>('/billing', data),
     updatePaymentStatus: (id: number, payment_status: string) =>
         put<ApiResponse<null>>(`/billing/${id}/status`, { payment_status }),
 };

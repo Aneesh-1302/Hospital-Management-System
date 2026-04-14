@@ -4,6 +4,7 @@ const { normalizeRole } = require("../utils/roles");
 // Protect middleware
 const protect = (req, res, next) => {
   const authHeader = req.headers.authorization;
+  console.log("AUTH HEADER:", req.headers.authorization);
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({
@@ -36,7 +37,10 @@ const authorizeRoles = (...allowedRoles) => {
     const normalizedAllowedRoles = allowedRoles
       .map(normalizeRole)
       .filter(Boolean);
-
+    
+    console.log("RAW ROLE:", req.user?.role);
+    console.log("NORMALIZED:", userRole);
+    console.log("ALLOWED:", normalizedAllowedRoles);
     if (!userRole || !normalizedAllowedRoles.includes(userRole)) {
       return res.status(403).json({
         message: "Access denied: insufficient permissions"
