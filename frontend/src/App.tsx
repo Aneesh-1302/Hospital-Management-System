@@ -26,6 +26,7 @@ const PatientDetails = lazy(() => import('./pages/doctor/PatientDetails'));
 const WritePrescription = lazy(() => import('./pages/doctor/WritePrescription'));
 const UploadReports = lazy(() => import('./pages/doctor/UploadReports'));
 const CreateBill = lazy(() => import('./pages/doctor/CreateBill'));
+const ViewBills = lazy(() => import('./pages/doctor/ViewBills'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // ─── Page Loader ──────────────────────────────────────────────────────────────
@@ -79,6 +80,7 @@ function App() {
               <Route path="/doctor/prescribe" element={<WritePrescription />} />
               <Route path="/doctor/reports" element={<UploadReports />} />
               <Route path="/doctor/billing" element={<CreateBill />} />
+              <Route path="/doctor/bills" element={<ViewBills />} />
             </Route>
 
             {/* 404 */}

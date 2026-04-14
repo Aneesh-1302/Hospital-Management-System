@@ -37,6 +37,8 @@ const CreateBill = () => {
         // 1️⃣ mark completed
         await appointmentAPI.updateStatus(selectedAppt.appointment_id, "Completed");
 
+        console.log(selectedAppt);
+
         // 2️⃣ create bill
         await billingAPI.create({
         patient_id: selectedAppt.patient_id,

@@ -105,6 +105,7 @@ export const appointmentAPI = {
 export const billingAPI = {
     getMy: () => get<ApiResponse<Bill[]>>('/billing/my'),
     getAll: () => get<ApiResponse<Bill[]>>('/billing'),
+    getDoctor: () => get<ApiResponse<Bill[]>>('/billing/doctor'),
     create: (data: {
     patient_id: number;
     appointment_id: number;

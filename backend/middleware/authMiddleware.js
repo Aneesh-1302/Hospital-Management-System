@@ -4,6 +4,7 @@ const { normalizeRole } = require("../utils/roles");
 // Protect middleware
 const protect = (req, res, next) => {
   const authHeader = req.headers.authorization;
+  console.log("AUTH HEADER:", req.headers.authorization);
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({

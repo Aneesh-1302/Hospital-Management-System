@@ -18,6 +18,32 @@ const getAllBills = async (req, res) => {
   }
 };
 
+const getDoctorBills = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const [bills] = await db.execute(
+      `SELECT b.bill_id, b.patient_id, b.appointment_id,
+              b.consultation_charges, b.lab_charges, b.medicine_charges,
+              b.total_amount, b.payment_status, b.issued_date,
+              p.name AS patient_name,
+              a.appointment_date, a.appointment_time
+       FROM Billing b
+       JOIN Appointments a ON b.appointment_id = a.appointment_id
+       JOIN Doctors d ON a.doctor_id = d.doctor_id
+       JOIN Patients p ON b.patient_id = p.patient_id
+       WHERE d.user_id = ?
+       ORDER BY b.issued_date DESC`,
+      [userId]
+    );
+
+    res.json({ message: "Doctor bills fetched successfully", data: bills });
+  } catch (error) {
+    console.error("Get Doctor Bills Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // CREATE BILL
 const createBill = async (req, res) => {
   try {
@@ -34,6 +60,9 @@ const createBill = async (req, res) => {
       `SELECT status, patient_id FROM Appointments WHERE appointment_id = ?`,
       [appointment_id]
     );
+
+    console.log("REQ BODY:", req.body);
+    console.log("APPOINTMENT FROM DB:", appointment);
 
     if (appointment.length === 0)
       return res.status(400).json({ message: "Appointment not found" });
@@ -120,5 +149,6 @@ module.exports = {
   getAllBills,
   createBill,
   updatePaymentStatus,
-  getMyBills
+  getMyBills,
+  getDoctorBills
 };

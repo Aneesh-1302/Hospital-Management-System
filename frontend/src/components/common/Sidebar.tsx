@@ -17,6 +17,7 @@ const doctorLinks = [
   { to: '/doctor/prescribe', label: 'Prescribe'},
   { to: '/doctor/reports', label: 'Upload Reports'},
   { to: '/doctor/billing', label: 'Create Bill'},
+  { to: '/doctor/bills', label: 'View Bills'},
 ];
 
 const Sidebar = () => {
